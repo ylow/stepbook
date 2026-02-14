@@ -1,0 +1,292 @@
+<template>
+  <div
+    class="sequence-editor"
+    v-if="sequence"
+    @dragenter.prevent="onDragEnter"
+    @dragover.prevent
+    @dragleave="onDragLeave"
+    @drop.prevent="onDrop"
+  >
+    <header class="editor-header">
+      <button class="back-btn" @click="$router.push('/')">← Back</button>
+      <input
+        class="title-input"
+        v-model="sequence.title"
+        @blur="saveTitle"
+        @keyup.enter="$event.target.blur()"
+      />
+      <label class="add-step-btn">
+        + Step
+        <input type="file" accept="image/*" hidden @change="handleAddStep" multiple />
+      </label>
+    </header>
+
+    <div class="editor-body">
+      <div class="canvas-area">
+        <StepCanvas
+          v-if="currentStep"
+          :image-src="`/images/${currentStep.image_path}`"
+          :annotations="currentStep.annotations"
+          @update="saveAnnotations"
+        />
+        <div v-else class="empty-canvas">
+          <p>Upload an image or drag &amp; drop files to create the first step</p>
+        </div>
+      </div>
+      <div class="notes-area">
+        <StepNotes
+          v-if="currentStep"
+          :notes="currentStep.notes"
+          @update="saveNotes"
+        />
+      </div>
+    </div>
+
+    <Filmstrip
+      v-if="sequence.steps.length"
+      :steps="sequence.steps"
+      :selected-id="currentStep?.id"
+      @select="selectStep"
+      @reorder="handleReorder"
+      @delete="handleDeleteStep"
+    />
+
+    <!-- Drag-and-drop overlay -->
+    <div v-if="dragOver || uploading" class="drop-overlay">
+      <div class="drop-message">
+        <template v-if="uploading">
+          Uploading {{ uploadProgress }} of {{ uploadTotal }}...
+        </template>
+        <template v-else>
+          Drop images to add steps
+        </template>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { fetchSequence, updateSequence, addStep, updateStep, reorderSteps, deleteStep } from '../api.js'
+import Filmstrip from '../components/Filmstrip.vue'
+import StepNotes from '../components/StepNotes.vue'
+import StepCanvas from '../components/StepCanvas.vue'
+
+const route = useRoute()
+const sequence = ref(null)
+const selectedStepId = ref(null)
+const dragOver = ref(false)
+const uploading = ref(false)
+const uploadProgress = ref(0)
+const uploadTotal = ref(0)
+let dragCounter = 0
+
+const currentStep = computed(() => {
+  if (!sequence.value?.steps.length) return null
+  return sequence.value.steps.find(s => s.id === selectedStepId.value) || sequence.value.steps[0]
+})
+
+async function load() {
+  sequence.value = await fetchSequence(route.params.id)
+  if (sequence.value.steps.length && !selectedStepId.value) {
+    selectedStepId.value = sequence.value.steps[0].id
+  }
+}
+
+function selectStep(id) {
+  selectedStepId.value = id
+}
+
+async function saveTitle() {
+  await updateSequence(sequence.value.id, { title: sequence.value.title })
+}
+
+async function saveNotes(notes) {
+  await updateStep(currentStep.value.id, { notes })
+  currentStep.value.notes = notes
+}
+
+async function saveAnnotations(annotations) {
+  await updateStep(currentStep.value.id, { annotations })
+  currentStep.value.annotations = annotations
+}
+
+const ALLOWED_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp)$/i
+
+function filterAndSortImages(files) {
+  return Array.from(files)
+    .filter(f => ALLOWED_EXTENSIONS.test(f.name))
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+}
+
+async function uploadFiles(files) {
+  if (!files.length) return
+  uploading.value = true
+  uploadTotal.value = files.length
+  uploadProgress.value = 0
+  for (const file of files) {
+    uploadProgress.value++
+    await addStep(sequence.value.id, file)
+  }
+  uploading.value = false
+  await load()
+  if (sequence.value.steps.length) {
+    selectedStepId.value = sequence.value.steps[sequence.value.steps.length - 1].id
+  }
+}
+
+async function handleAddStep(e) {
+  const files = filterAndSortImages(e.target.files)
+  await uploadFiles(files)
+  e.target.value = ''
+}
+
+function onDragEnter(e) {
+  dragCounter++
+  dragOver.value = true
+}
+
+function onDragLeave(e) {
+  dragCounter--
+  if (dragCounter <= 0) {
+    dragCounter = 0
+    dragOver.value = false
+  }
+}
+
+async function onDrop(e) {
+  dragCounter = 0
+  dragOver.value = false
+  const files = filterAndSortImages(e.dataTransfer.files)
+  await uploadFiles(files)
+}
+
+async function handleReorder(stepIds) {
+  await reorderSteps(sequence.value.id, stepIds)
+  await load()
+}
+
+async function handleDeleteStep(stepId) {
+  if (!confirm('Delete this step?')) return
+  await deleteStep(stepId)
+  await load()
+}
+
+function handleKeyDown(e) {
+  if (!sequence.value?.steps.length) return
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+  const steps = sequence.value.steps
+  const idx = steps.findIndex(s => s.id === selectedStepId.value)
+  if (e.key === 'ArrowLeft' && idx > 0) {
+    selectedStepId.value = steps[idx - 1].id
+  } else if (e.key === 'ArrowRight' && idx < steps.length - 1) {
+    selectedStepId.value = steps[idx + 1].id
+  }
+}
+
+onMounted(() => {
+  load()
+  window.addEventListener('keydown', handleKeyDown)
+})
+onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
+</script>
+
+<style scoped>
+.sequence-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #1e1e30;
+  border-bottom: 1px solid #333;
+}
+
+.back-btn {
+  background: none;
+  color: #64b5f6;
+  padding: 4px 8px;
+}
+
+.title-input {
+  flex: 1;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #e0e0e0;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.title-input:focus {
+  border-color: #64b5f6;
+  background: #2a2a3e;
+}
+
+.add-step-btn {
+  background: #3f51b5;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-step-btn:hover {
+  background: #5c6bc0;
+}
+
+.editor-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.canvas-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  overflow: hidden;
+}
+
+.empty-canvas {
+  color: #666;
+  font-size: 16px;
+}
+
+.notes-area {
+  width: 300px;
+  background: #1e1e30;
+  border-left: 1px solid #333;
+}
+
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 46, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.drop-message {
+  color: #e0e0e0;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 32px 48px;
+  border: 3px dashed #64b5f6;
+  border-radius: 16px;
+  background: rgba(63, 81, 181, 0.15);
+}
+</style>
