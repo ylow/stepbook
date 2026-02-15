@@ -92,3 +92,8 @@ export async function importSequence(file) {
   }
   return res.json()
 }
+
+export async function fetchConfig() {
+  const res = await fetch(`${API}/config`)
+  return res.json()
+}

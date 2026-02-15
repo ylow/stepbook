@@ -15,6 +15,10 @@
       </div>
     </header>
 
+    <p v-if="dataDir" class="data-info">
+      Data saved to <strong>{{ dataDir }}</strong> — back up this folder to preserve your work.
+    </p>
+
     <div v-if="showCreate" class="create-form">
       <input
         v-model="newTitle"
@@ -38,10 +42,11 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import { fetchSequences, createSequence, deleteSequence, exportSequence, importSequence } from '../api.js'
+import { fetchSequences, createSequence, deleteSequence, exportSequence, importSequence, fetchConfig } from '../api.js'
 import SequenceList from '../components/SequenceList.vue'
 
 const sequences = ref([])
+const dataDir = ref('')
 const showCreate = ref(false)
 const newTitle = ref('')
 const titleInput = ref(null)
@@ -49,6 +54,12 @@ const importInput = ref(null)
 
 async function load() {
   sequences.value = await fetchSequences()
+  if (!dataDir.value) {
+    try {
+      const config = await fetchConfig()
+      dataDir.value = config.dataDir
+    } catch {}
+  }
 }
 
 async function create() {
@@ -124,6 +135,12 @@ onMounted(load)
 .header-actions {
   display: flex;
   gap: 8px;
+}
+
+.data-info {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 16px;
 }
 
 .empty {
