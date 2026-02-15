@@ -32,12 +32,12 @@ router.get('/:id/export', (req, res) => {
   };
 
   // Sanitize title for use as filename
-  const safeTitle = sequence.title.replace(/[^a-zA-Z0-9_\- ]/g, '').trim() || 'sequence';
+  const safeTitle = sequence.title.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 50) || 'sequence';
 
   res.set('Content-Type', 'application/zip');
   res.set('Content-Disposition', `attachment; filename="${safeTitle}.zip"`);
 
-  const archive = archiver('zip', { zlib: { level: 9 } });
+  const archive = archiver('zip', { zlib: { level: 5 } });
 
   archive.on('error', (err) => {
     console.error('Archive error:', err);
@@ -56,6 +56,7 @@ router.get('/:id/export', (req, res) => {
   for (const step of steps) {
     const ext = path.extname(step.image_path) || '.png';
     const imagePath = path.join(imagesDir, step.image_path);
+    if (!path.resolve(imagePath).startsWith(path.resolve(imagesDir))) continue;
     if (fs.existsSync(imagePath)) {
       archive.file(imagePath, { name: `images/${step.order_index}${ext}` });
     }
