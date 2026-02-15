@@ -23,6 +23,7 @@ app.use('/images', express.static(path.join(__dirname, '..', 'data', 'images')))
 app.use('/api/sequences', require('./routes/sequences'));
 app.use('/api/sequences', require('./routes/steps'));
 app.use('/api', require('./routes/steps'));
+app.use('/api/sequences', require('./routes/transfer'));
 
 // SPA fallback: serve index.html for any non-API GET route
 if (hasClientDist) {
