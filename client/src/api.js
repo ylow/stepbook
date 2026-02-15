@@ -86,8 +86,9 @@ export async function importSequence(file) {
     body: form
   })
   if (!res.ok) {
-    const err = await res.json()
-    throw new Error(err.error || 'Import failed')
+    let msg = 'Import failed'
+    try { const err = await res.json(); msg = err.error || msg } catch {}
+    throw new Error(msg)
   }
   return res.json()
 }

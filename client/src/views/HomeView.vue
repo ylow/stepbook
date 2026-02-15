@@ -83,8 +83,8 @@ async function handleImport(e) {
   try {
     await importSequence(file)
     await load()
-  } catch (e) {
-    alert('Import failed: ' + e.message)
+  } catch (err) {
+    alert('Import failed: ' + err.message)
   }
   importInput.value.value = ''
 }
