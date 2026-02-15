@@ -2,9 +2,6 @@
   "name": "stepbook",
   "version": "1.0.0",
   "main": "electron/main.js",
-  "directories": {
-    "doc": "docs"
-  },
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "nodemon server/index.js",
@@ -17,7 +14,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Step-by-step visual guide creator with image annotations",
   "dependencies": {
     "adm-zip": "^0.5.16",
     "archiver": "^7.0.1",
