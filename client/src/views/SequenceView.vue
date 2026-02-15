@@ -68,6 +68,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import exifr from 'exifr'
 import { fetchSequence, updateSequence, addStep, updateStep, reorderSteps, deleteStep } from '../api.js'
 import Filmstrip from '../components/Filmstrip.vue'
 import StepNotes from '../components/StepNotes.vue'
@@ -114,10 +115,28 @@ async function saveAnnotations(annotations) {
 
 const ALLOWED_EXTENSIONS = /\.(jpg|jpeg|png|gif|webp)$/i
 
-function filterAndSortImages(files) {
-  return Array.from(files)
-    .filter(f => ALLOWED_EXTENSIONS.test(f.name))
-    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+async function filterAndSortImages(files) {
+  const validFiles = Array.from(files).filter(f => ALLOWED_EXTENSIONS.test(f.name))
+
+  const filesWithDates = await Promise.all(
+    validFiles.map(async (file) => {
+      let date = null
+      try {
+        const exif = await exifr.parse(file, ['DateTimeOriginal'])
+        if (exif?.DateTimeOriginal) date = exif.DateTimeOriginal
+      } catch {}
+      return { file, date }
+    })
+  )
+
+  filesWithDates.sort((a, b) => {
+    if (a.date && b.date) return a.date - b.date
+    if (a.date && !b.date) return -1
+    if (!a.date && b.date) return 1
+    return a.file.name.localeCompare(b.file.name, undefined, { numeric: true })
+  })
+
+  return filesWithDates.map(f => f.file)
 }
 
 async function uploadFiles(files) {
@@ -137,7 +156,7 @@ async function uploadFiles(files) {
 }
 
 async function handleAddStep(e) {
-  const files = filterAndSortImages(e.target.files)
+  const files = await filterAndSortImages(e.target.files)
   await uploadFiles(files)
   e.target.value = ''
 }
@@ -158,7 +177,7 @@ function onDragLeave(e) {
 async function onDrop(e) {
   dragCounter = 0
   dragOver.value = false
-  const files = filterAndSortImages(e.dataTransfer.files)
+  const files = await filterAndSortImages(e.dataTransfer.files)
   await uploadFiles(files)
 }
 
