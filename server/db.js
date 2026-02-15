@@ -1,13 +1,8 @@
 const Database = require('better-sqlite3');
 const path = require('path');
-const fs = require('fs');
+const { DATA_DIR } = require('./config');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
 const DB_PATH = path.join(DATA_DIR, 'stepbook.db');
-
-// Ensure data directory exists
-fs.mkdirSync(DATA_DIR, { recursive: true });
-fs.mkdirSync(path.join(DATA_DIR, 'images'), { recursive: true });
 
 const db = new Database(DB_PATH);
 

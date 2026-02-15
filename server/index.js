@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const { IMAGES_DIR } = require('./config');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve uploaded images
-app.use('/images', express.static(path.join(__dirname, '..', 'data', 'images')));
+app.use('/images', express.static(IMAGES_DIR));
 
 // API routes
 app.use('/api/sequences', require('./routes/sequences'));

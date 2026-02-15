@@ -6,12 +6,12 @@ const AdmZip = require('adm-zip');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
+const { IMAGES_DIR, TMP_DIR } = require('../config');
 
 // Configure multer for zip file uploads to a temp directory
-const tmpDir = path.join(__dirname, '..', '..', 'data', 'tmp');
-fs.mkdirSync(tmpDir, { recursive: true });
+fs.mkdirSync(TMP_DIR, { recursive: true });
 const importUpload = multer({
-  dest: tmpDir,
+  dest: TMP_DIR,
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
   fileFilter: (req, file, cb) => {
     if (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip')) {
@@ -73,11 +73,10 @@ router.get('/:id/export', (req, res) => {
   archive.append(JSON.stringify(manifest, null, 2), { name: 'manifest.json' });
 
   // Add step images
-  const imagesDir = path.join(__dirname, '..', '..', 'data', 'images');
   for (const step of steps) {
     const ext = path.extname(step.image_path) || '.png';
-    const imagePath = path.join(imagesDir, step.image_path);
-    if (!path.resolve(imagePath).startsWith(path.resolve(imagesDir))) continue;
+    const imagePath = path.join(IMAGES_DIR, step.image_path);
+    if (!path.resolve(imagePath).startsWith(path.resolve(IMAGES_DIR))) continue;
     if (fs.existsSync(imagePath)) {
       archive.file(imagePath, { name: `images/${step.order_index}${ext}` });
     }
@@ -139,8 +138,7 @@ router.post('/import', importUpload.single('file'), (req, res) => {
     }
 
     sequenceId = uuidv4();
-    const imagesDir = path.join(__dirname, '..', '..', 'data', 'images');
-    const seqImagesDir = path.join(imagesDir, sequenceId);
+    const seqImagesDir = path.join(IMAGES_DIR, sequenceId);
     fs.mkdirSync(seqImagesDir, { recursive: true });
 
     // Prepare step data and extract images
@@ -234,7 +232,7 @@ router.post('/import', importUpload.single('file'), (req, res) => {
     cleanup();
     // If images were partially written, try to clean up the image directory
     if (sequenceId) {
-      const seqImagesDir = path.join(__dirname, '..', '..', 'data', 'images', sequenceId);
+      const seqImagesDir = path.join(IMAGES_DIR, sequenceId);
       try {
         if (fs.existsSync(seqImagesDir)) {
           fs.rmSync(seqImagesDir, { recursive: true, force: true });

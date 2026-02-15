@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 const db = require('../db');
+const { IMAGES_DIR } = require('../config');
 
 const router = express.Router();
 
@@ -61,7 +62,7 @@ router.delete('/:id', (req, res) => {
   db.prepare('DELETE FROM sequences WHERE id = ?').run(req.params.id);
 
   // Remove image directory for this sequence
-  const imageDir = path.join(__dirname, '..', '..', 'data', 'images', req.params.id);
+  const imageDir = path.join(IMAGES_DIR, req.params.id);
   if (fs.existsSync(imageDir)) {
     fs.rmSync(imageDir, { recursive: true });
   }

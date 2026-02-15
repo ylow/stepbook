@@ -4,13 +4,14 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 const db = require('../db');
+const { IMAGES_DIR } = require('../config');
 
 const router = express.Router();
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '..', '..', 'data', 'images', req.params.sequenceId);
+    const dir = path.join(IMAGES_DIR, req.params.sequenceId);
     fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
@@ -97,7 +98,7 @@ router.delete('/steps/:id', (req, res) => {
   db.prepare('DELETE FROM steps WHERE id = ?').run(req.params.id);
 
   // Remove image file
-  const imagePath = path.join(__dirname, '..', '..', 'data', 'images', step.image_path);
+  const imagePath = path.join(IMAGES_DIR, step.image_path);
   if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
 
   // Re-index remaining steps
