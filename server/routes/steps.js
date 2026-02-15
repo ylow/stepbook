@@ -99,7 +99,9 @@ router.delete('/steps/:id', (req, res) => {
 
   // Remove image file
   const imagePath = path.join(IMAGES_DIR, step.image_path);
-  if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+  if (path.resolve(imagePath).startsWith(path.resolve(IMAGES_DIR)) && fs.existsSync(imagePath)) {
+    fs.unlinkSync(imagePath);
+  }
 
   // Re-index remaining steps
   const remaining = db.prepare('SELECT id FROM steps WHERE sequence_id = ? ORDER BY order_index').all(step.sequence_id);
@@ -113,6 +115,21 @@ router.delete('/steps/:id', (req, res) => {
 router.put('/:sequenceId/reorder', (req, res) => {
   const { stepIds } = req.body;
   if (!Array.isArray(stepIds)) return res.status(400).json({ error: 'stepIds array is required' });
+
+  // Validate: no duplicates
+  if (new Set(stepIds).size !== stepIds.length) {
+    return res.status(400).json({ error: 'Duplicate step IDs' });
+  }
+
+  // Validate: all IDs belong to this sequence and none are missing
+  const existing = db.prepare('SELECT id FROM steps WHERE sequence_id = ?').all(req.params.sequenceId);
+  const existingIds = new Set(existing.map(s => s.id));
+  for (const id of stepIds) {
+    if (!existingIds.has(id)) return res.status(400).json({ error: 'Invalid step ID in reorder' });
+  }
+  if (stepIds.length !== existingIds.size) {
+    return res.status(400).json({ error: 'All steps must be included in reorder' });
+  }
 
   const update = db.prepare('UPDATE steps SET order_index = ? WHERE id = ? AND sequence_id = ?');
   const reorder = db.transaction((ids, seqId) => {
