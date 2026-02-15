@@ -2,7 +2,17 @@
   <div class="home">
     <header class="home-header">
       <h1>Stepbook</h1>
-      <button @click="showCreate = true">+ New Sequence</button>
+      <div class="header-actions">
+        <button @click="triggerImport">Import Zip</button>
+        <button @click="showCreate = true">+ New Sequence</button>
+        <input
+          ref="importInput"
+          type="file"
+          accept=".zip"
+          style="display: none"
+          @change="handleImport"
+        />
+      </div>
     </header>
 
     <div v-if="showCreate" class="create-form">
@@ -20,6 +30,7 @@
       v-if="sequences.length"
       :sequences="sequences"
       @delete="handleDelete"
+      @export="handleExport"
     />
     <p v-else class="empty">No sequences yet. Create one to get started.</p>
   </div>
@@ -27,13 +38,14 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import { fetchSequences, createSequence, deleteSequence } from '../api.js'
+import { fetchSequences, createSequence, deleteSequence, exportSequence, importSequence } from '../api.js'
 import SequenceList from '../components/SequenceList.vue'
 
 const sequences = ref([])
 const showCreate = ref(false)
 const newTitle = ref('')
 const titleInput = ref(null)
+const importInput = ref(null)
 
 async function load() {
   sequences.value = await fetchSequences()
@@ -51,6 +63,30 @@ async function handleDelete(id) {
   if (!confirm('Delete this sequence and all its steps?')) return
   await deleteSequence(id)
   await load()
+}
+
+async function handleExport(id) {
+  try {
+    await exportSequence(id)
+  } catch (e) {
+    alert('Export failed: ' + e.message)
+  }
+}
+
+function triggerImport() {
+  importInput.value.click()
+}
+
+async function handleImport(e) {
+  const file = e.target.files[0]
+  if (!file) return
+  try {
+    await importSequence(file)
+    await load()
+  } catch (e) {
+    alert('Import failed: ' + e.message)
+  }
+  importInput.value.value = ''
 }
 
 onMounted(load)
@@ -83,6 +119,11 @@ onMounted(load)
 
 .cancel-btn {
   background: #555;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .empty {

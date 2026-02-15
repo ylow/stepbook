@@ -63,3 +63,31 @@ export async function reorderSteps(sequenceId, stepIds) {
   })
   return res.json()
 }
+
+export async function exportSequence(id) {
+  const res = await fetch(`${API}/sequences/${id}/export`)
+  if (!res.ok) throw new Error('Export failed')
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = res.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || 'sequence.zip'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+export async function importSequence(file) {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch(`${API}/sequences/import`, {
+    method: 'POST',
+    body: form
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.error || 'Import failed')
+  }
+  return res.json()
+}

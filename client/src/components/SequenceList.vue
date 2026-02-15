@@ -14,6 +14,7 @@
         <h3>{{ seq.title }}</h3>
         <span class="step-count">{{ seq.step_count }} step{{ seq.step_count !== 1 ? 's' : '' }}</span>
       </div>
+      <button class="export-btn" @click.stop="$emit('export', seq.id)" title="Export as zip">&#8615;</button>
       <button class="delete-btn" @click.stop="$emit('delete', seq.id)" title="Delete">&times;</button>
     </div>
   </div>
@@ -23,7 +24,7 @@
 defineProps({
   sequences: { type: Array, required: true }
 })
-defineEmits(['delete'])
+defineEmits(['delete', 'export'])
 </script>
 
 <style scoped>
@@ -98,6 +99,28 @@ defineEmits(['delete'])
   display: none;
   align-items: center;
   justify-content: center;
+}
+
+.export-btn {
+  position: absolute;
+  top: 8px;
+  right: 42px;
+  background: rgba(0,0,0,0.6);
+  color: #64b5f6;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 18px;
+  padding: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.sequence-card:hover .export-btn {
+  display: flex;
 }
 
 .sequence-card:hover .delete-btn {
