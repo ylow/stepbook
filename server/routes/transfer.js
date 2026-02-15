@@ -12,8 +12,18 @@ const tmpDir = path.join(__dirname, '..', '..', 'data', 'tmp');
 fs.mkdirSync(tmpDir, { recursive: true });
 const importUpload = multer({
   dest: tmpDir,
-  limits: { fileSize: 100 * 1024 * 1024 } // 100MB
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only zip files are allowed'));
+    }
+  }
 });
+
+const ALLOWED_IMAGE_EXTS = /\.(jpg|jpeg|png|gif|webp)$/i;
+const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50MB per image
 
 const router = express.Router();
 
@@ -154,12 +164,26 @@ router.post('/import', importUpload.single('file'), (req, res) => {
         return res.status(400).json({ error: `Invalid manifest: step ${i} has invalid image_filename` });
       }
 
+      // Validate image extension
+      if (!ALLOWED_IMAGE_EXTS.test(imageFilename)) {
+        fs.rmSync(seqImagesDir, { recursive: true, force: true });
+        cleanup();
+        return res.status(400).json({ error: `Invalid image type for step ${i}: ${imageFilename}` });
+      }
+
       // Look for the image in the zip under images/ directory
       const imageEntry = zip.getEntry(`images/${imageFilename}`);
       if (!imageEntry) {
         fs.rmSync(seqImagesDir, { recursive: true, force: true });
         cleanup();
         return res.status(400).json({ error: `Missing image file in zip: images/${imageFilename}` });
+      }
+
+      // Guard against zip bombs
+      if (imageEntry.header.size > MAX_IMAGE_SIZE) {
+        fs.rmSync(seqImagesDir, { recursive: true, force: true });
+        cleanup();
+        return res.status(400).json({ error: `Image file too large: images/${imageFilename}` });
       }
 
       const stepId = uuidv4();
