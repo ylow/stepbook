@@ -32,7 +32,19 @@ Builds the Vue frontend and serves everything from the Express server on port 30
 
 - **Frontend:** Vue 3, Konva (canvas drawing), Sortable.js (drag-and-drop), Vite
 - **Backend:** Express 5, SQLite (better-sqlite3), Multer (file uploads)
-- **Data:** SQLite database and images stored in `data/`
+- **Data:** SQLite database and images stored in `data/` (dev) or `~/Documents/Stepbook/` (desktop app)
+- **Desktop:** Electron — runs as a native app on macOS and Windows
+
+## Desktop App
+
+For users who don't want to use the command line:
+
+```bash
+npm run electron:dev       # Run the desktop app in development
+npm run electron:build     # Package as .dmg (macOS) or .exe (Windows)
+```
+
+The packaged app stores data in `~/Documents/Stepbook/` (macOS) or `Documents\Stepbook\` (Windows). Back up this folder to preserve your work.
 
 ## Project Structure
 
@@ -44,8 +56,10 @@ client/          Vue 3 frontend
     api.js       API client
 server/          Express backend
   routes/        sequences, steps, transfer (export/import)
+  config.js      Data directory configuration
   db.js          SQLite setup
-data/            Runtime data (database + uploaded images)
+electron/        Electron main process
+data/            Runtime data (dev mode)
 ```
 
 Authored by Claude Opus 4.6
