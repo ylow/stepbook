@@ -9,6 +9,16 @@ A web app for creating step-by-step visual guides with image annotations. Upload
 - **Notes** — Add written notes alongside each step
 - **Export/Import** — Share sequences as zip files between Stepbook instances
 
+## Use Cases
+
+- **Cooking recipes** — Photograph each step of a recipe, annotate key techniques, and share the full sequence
+- **Furniture assembly** — Document assembly steps with arrows pointing to specific parts and connections
+- **Repair & maintenance guides** — Capture how to fix a leaky faucet, replace a car part, or service equipment
+- **Lab procedures** — Record scientific protocols with annotated photos of each stage
+- **Software tutorials** — Screenshot UI workflows and annotate buttons, menus, and form fields
+- **Craft & DIY projects** — Document knitting patterns, woodworking builds, or 3D printing setups step by step
+- **Onboarding & training** — Create visual SOPs for new team members to follow
+
 ## Getting Started
 
 ```bash
