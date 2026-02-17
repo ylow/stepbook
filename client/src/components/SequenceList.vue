@@ -4,7 +4,7 @@
       v-for="seq in sequences"
       :key="seq.id"
       class="sequence-card"
-      @click="$router.push(`/sequence/${seq.id}`)"
+      @click="$router.push(`/book/${props.bookId}/sequence/${seq.id}`)"
     >
       <div class="card-thumbnail">
         <img v-if="seq.thumbnail_path" :src="`/images/${seq.thumbnail_path}`" alt="" />
@@ -21,8 +21,9 @@
 </template>
 
 <script setup>
-defineProps({
-  sequences: { type: Array, required: true }
+const props = defineProps({
+  sequences: { type: Array, required: true },
+  bookId: { type: String, required: true }
 })
 defineEmits(['delete', 'export'])
 </script>

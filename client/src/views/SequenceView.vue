@@ -8,7 +8,7 @@
     @drop.prevent="onDrop"
   >
     <header class="editor-header">
-      <button class="back-btn" @click="$router.push('/')">← Back</button>
+      <button class="back-btn" @click="$router.push('/book/' + route.params.bookId)">← Back</button>
       <input
         class="title-input"
         v-model="sequence.title"

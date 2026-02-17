@@ -5,13 +5,22 @@ const archiver = require('archiver');
 const AdmZip = require('adm-zip');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const db = require('../db');
-const { IMAGES_DIR, TMP_DIR } = require('../config');
+const { getDb, getImagesDir, getTmpDir } = require('../book-context');
 
-// Configure multer for zip file uploads to a temp directory
-fs.mkdirSync(TMP_DIR, { recursive: true });
+// Configure multer for zip file uploads with dynamic temp directory
+const importStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const tmpDir = getTmpDir();
+    fs.mkdirSync(tmpDir, { recursive: true });
+    cb(null, tmpDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `import-${Date.now()}-${file.originalname}`);
+  }
+});
+
 const importUpload = multer({
-  dest: TMP_DIR,
+  storage: importStorage,
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
   fileFilter: (req, file, cb) => {
     if (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip')) {
@@ -29,10 +38,10 @@ const router = express.Router();
 
 // Export a sequence as a zip file
 router.get('/:id/export', (req, res) => {
-  const sequence = db.prepare('SELECT * FROM sequences WHERE id = ?').get(req.params.id);
+  const sequence = getDb().prepare('SELECT * FROM sequences WHERE id = ?').get(req.params.id);
   if (!sequence) return res.status(404).json({ error: 'Sequence not found' });
 
-  const steps = db.prepare('SELECT * FROM steps WHERE sequence_id = ? ORDER BY order_index').all(req.params.id);
+  const steps = getDb().prepare('SELECT * FROM steps WHERE sequence_id = ? ORDER BY order_index').all(req.params.id);
 
   // Build manifest
   const manifest = {
@@ -73,10 +82,11 @@ router.get('/:id/export', (req, res) => {
   archive.append(JSON.stringify(manifest, null, 2), { name: 'manifest.json' });
 
   // Add step images
+  const imagesDir = getImagesDir();
   for (const step of steps) {
     const ext = path.extname(step.image_path) || '.png';
-    const imagePath = path.join(IMAGES_DIR, step.image_path);
-    if (!path.resolve(imagePath).startsWith(path.resolve(IMAGES_DIR))) continue;
+    const imagePath = path.join(imagesDir, step.image_path);
+    if (!path.resolve(imagePath).startsWith(path.resolve(imagesDir))) continue;
     if (fs.existsSync(imagePath)) {
       archive.file(imagePath, { name: `images/${step.order_index}${ext}` });
     }
@@ -97,6 +107,7 @@ router.post('/import', importUpload.single('file'), (req, res) => {
   };
 
   let sequenceId = null;
+  const imagesDir = getImagesDir();
 
   try {
     if (!req.file) {
@@ -138,7 +149,7 @@ router.post('/import', importUpload.single('file'), (req, res) => {
     }
 
     sequenceId = uuidv4();
-    const seqImagesDir = path.join(IMAGES_DIR, sequenceId);
+    const seqImagesDir = path.join(imagesDir, sequenceId);
     fs.mkdirSync(seqImagesDir, { recursive: true });
 
     // Prepare step data and extract images
@@ -210,6 +221,7 @@ router.post('/import', importUpload.single('file'), (req, res) => {
     }
 
     // Insert sequence and all steps in a transaction
+    const db = getDb();
     const insertSequence = db.prepare('INSERT INTO sequences (id, title, description) VALUES (?, ?, ?)');
     const insertStep = db.prepare('INSERT INTO steps (id, sequence_id, order_index, image_path, annotations, notes) VALUES (?, ?, ?, ?, ?, ?)');
 
@@ -232,7 +244,7 @@ router.post('/import', importUpload.single('file'), (req, res) => {
     cleanup();
     // If images were partially written, try to clean up the image directory
     if (sequenceId) {
-      const seqImagesDir = path.join(IMAGES_DIR, sequenceId);
+      const seqImagesDir = path.join(imagesDir, sequenceId);
       try {
         if (fs.existsSync(seqImagesDir)) {
           fs.rmSync(seqImagesDir, { recursive: true, force: true });

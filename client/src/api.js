@@ -1,5 +1,41 @@
 const API = '/api'
 
+// Book API
+export async function fetchBooks() {
+  const res = await fetch(`${API}/books`)
+  return res.json()
+}
+
+export async function createBook(name) {
+  const res = await fetch(`${API}/books`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name })
+  })
+  return res.json()
+}
+
+export async function addExistingBook(name, path) {
+  const res = await fetch(`${API}/books/add`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, path })
+  })
+  return res.json()
+}
+
+export async function selectBook(id) {
+  const res = await fetch(`${API}/books/${id}/select`, {
+    method: 'POST'
+  })
+  return res.json()
+}
+
+export async function removeBook(id) {
+  await fetch(`${API}/books/${id}`, { method: 'DELETE' })
+}
+
+// Sequence API
 export async function fetchSequences() {
   const res = await fetch(`${API}/sequences`)
   return res.json()

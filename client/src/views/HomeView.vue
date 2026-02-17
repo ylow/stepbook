@@ -1,7 +1,10 @@
 <template>
   <div class="home">
     <header class="home-header">
-      <h1>Stepbook</h1>
+      <div class="header-left">
+        <button class="back-btn" @click="$router.push('/')">← Books</button>
+        <h1>Stepbook</h1>
+      </div>
       <div class="header-actions">
         <button @click="triggerImport">Import Zip</button>
         <button @click="showCreate = true">+ New Sequence</button>
@@ -33,27 +36,34 @@
     <SequenceList
       v-if="sequences.length"
       :sequences="sequences"
+      :bookId="route.params.bookId"
       @delete="handleDelete"
       @export="handleExport"
     />
-    <p v-else class="empty">No sequences yet. Create one to get started.</p>
+    <p v-else-if="loaded" class="empty">No sequences yet. Create one to get started.</p>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import { fetchSequences, createSequence, deleteSequence, exportSequence, importSequence, fetchConfig } from '../api.js'
+import { useRoute } from 'vue-router'
+import { fetchSequences, createSequence, deleteSequence, exportSequence, importSequence, fetchConfig, selectBook } from '../api.js'
 import SequenceList from '../components/SequenceList.vue'
 
+const route = useRoute()
 const sequences = ref([])
 const dataDir = ref('')
 const showCreate = ref(false)
 const newTitle = ref('')
 const titleInput = ref(null)
 const importInput = ref(null)
+const loaded = ref(false)
 
 async function load() {
+  // Select the book first
+  await selectBook(route.params.bookId)
   sequences.value = await fetchSequences()
+  loaded.value = true
   if (!dataDir.value) {
     try {
       const config = await fetchConfig()
@@ -115,6 +125,18 @@ onMounted(load)
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-btn {
+  background: none;
+  color: #64b5f6;
+  padding: 4px 8px;
 }
 
 .create-form {

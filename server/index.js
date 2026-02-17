@@ -2,9 +2,21 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const { IMAGES_DIR, DATA_DIR } = require('./config');
+const { ROOT_DIR } = require('./config');
+const books = require('./books');
+const bookContext = require('./book-context');
 
 function createApp() {
+  // Initialize books registry and book context
+  books.init(ROOT_DIR);
+  bookContext.init(ROOT_DIR);
+
+  // Auto-select the default book
+  const defaultBook = books.getBook('default');
+  if (defaultBook) {
+    bookContext.switchBook(defaultBook.id, books.resolveBookPath(defaultBook));
+  }
+
   const app = express();
 
   // In production, serve the built Vue app's static assets FIRST
@@ -19,13 +31,16 @@ function createApp() {
 
   // Config endpoint — tells the frontend where data is stored
   app.get('/api/config', (req, res) => {
-    res.json({ dataDir: DATA_DIR });
+    res.json({ rootDir: ROOT_DIR, dataDir: bookContext.getDataDir() });
   });
 
-  // Serve uploaded images
-  app.use('/images', express.static(IMAGES_DIR));
+  // Serve uploaded images dynamically from the active book's images dir
+  app.use('/images', (req, res, next) => {
+    express.static(bookContext.getImagesDir())(req, res, next);
+  });
 
   // API routes
+  app.use('/api/books', require('./routes/books'));
   app.use('/api/sequences', require('./routes/sequences'));
   app.use('/api/sequences', require('./routes/steps'));
   app.use('/api', require('./routes/steps'));

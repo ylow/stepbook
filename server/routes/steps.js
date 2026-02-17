@@ -3,15 +3,14 @@ const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
-const db = require('../db');
-const { IMAGES_DIR } = require('../config');
+const { getDb, getImagesDir } = require('../book-context');
 
 const router = express.Router();
 
-// Configure multer for image uploads
+// Configure multer for image uploads with dynamic destination
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = path.join(IMAGES_DIR, req.params.sequenceId);
+    const dir = path.join(getImagesDir(), req.params.sequenceId);
     fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
@@ -40,7 +39,7 @@ const upload = multer({
 router.post('/:sequenceId/steps', upload.single('image'), (req, res) => {
   const { sequenceId } = req.params;
 
-  const sequence = db.prepare('SELECT * FROM sequences WHERE id = ?').get(sequenceId);
+  const sequence = getDb().prepare('SELECT * FROM sequences WHERE id = ?').get(sequenceId);
   if (!sequence) return res.status(404).json({ error: 'Sequence not found' });
 
   if (!req.file) return res.status(400).json({ error: 'Image file is required' });
@@ -49,29 +48,29 @@ router.post('/:sequenceId/steps', upload.single('image'), (req, res) => {
   const imagePath = `${sequenceId}/${req.file.filename}`;
 
   // Get the next order index
-  const maxOrder = db.prepare('SELECT MAX(order_index) as max_idx FROM steps WHERE sequence_id = ?').get(sequenceId);
+  const maxOrder = getDb().prepare('SELECT MAX(order_index) as max_idx FROM steps WHERE sequence_id = ?').get(sequenceId);
   const orderIndex = (maxOrder.max_idx ?? -1) + 1;
 
-  db.prepare(`
+  getDb().prepare(`
     INSERT INTO steps (id, sequence_id, order_index, image_path, annotations, notes)
     VALUES (?, ?, ?, ?, '{}', '')
   `).run(stepId, sequenceId, orderIndex, imagePath);
 
   // Update sequence timestamp
-  db.prepare("UPDATE sequences SET updated_at = datetime('now') WHERE id = ?").run(sequenceId);
+  getDb().prepare("UPDATE sequences SET updated_at = datetime('now') WHERE id = ?").run(sequenceId);
 
-  const step = db.prepare('SELECT * FROM steps WHERE id = ?').get(stepId);
+  const step = getDb().prepare('SELECT * FROM steps WHERE id = ?').get(stepId);
   res.status(201).json(step);
 });
 
 // Update a step (annotations, notes)
 router.put('/steps/:id', (req, res) => {
-  const step = db.prepare('SELECT * FROM steps WHERE id = ?').get(req.params.id);
+  const step = getDb().prepare('SELECT * FROM steps WHERE id = ?').get(req.params.id);
   if (!step) return res.status(404).json({ error: 'Step not found' });
 
   const { annotations, notes } = req.body;
 
-  db.prepare(`
+  getDb().prepare(`
     UPDATE steps SET
       annotations = ?,
       notes = ?,
@@ -84,28 +83,28 @@ router.put('/steps/:id', (req, res) => {
   );
 
   // Update sequence timestamp
-  db.prepare("UPDATE sequences SET updated_at = datetime('now') WHERE id = ?").run(step.sequence_id);
+  getDb().prepare("UPDATE sequences SET updated_at = datetime('now') WHERE id = ?").run(step.sequence_id);
 
-  const updated = db.prepare('SELECT * FROM steps WHERE id = ?').get(req.params.id);
+  const updated = getDb().prepare('SELECT * FROM steps WHERE id = ?').get(req.params.id);
   res.json(updated);
 });
 
 // Delete a step
 router.delete('/steps/:id', (req, res) => {
-  const step = db.prepare('SELECT * FROM steps WHERE id = ?').get(req.params.id);
+  const step = getDb().prepare('SELECT * FROM steps WHERE id = ?').get(req.params.id);
   if (!step) return res.status(404).json({ error: 'Step not found' });
 
-  db.prepare('DELETE FROM steps WHERE id = ?').run(req.params.id);
+  getDb().prepare('DELETE FROM steps WHERE id = ?').run(req.params.id);
 
   // Remove image file
-  const imagePath = path.join(IMAGES_DIR, step.image_path);
-  if (path.resolve(imagePath).startsWith(path.resolve(IMAGES_DIR)) && fs.existsSync(imagePath)) {
+  const imagePath = path.join(getImagesDir(), step.image_path);
+  if (path.resolve(imagePath).startsWith(path.resolve(getImagesDir())) && fs.existsSync(imagePath)) {
     fs.unlinkSync(imagePath);
   }
 
   // Re-index remaining steps
-  const remaining = db.prepare('SELECT id FROM steps WHERE sequence_id = ? ORDER BY order_index').all(step.sequence_id);
-  const reindex = db.prepare('UPDATE steps SET order_index = ? WHERE id = ?');
+  const remaining = getDb().prepare('SELECT id FROM steps WHERE sequence_id = ? ORDER BY order_index').all(step.sequence_id);
+  const reindex = getDb().prepare('UPDATE steps SET order_index = ? WHERE id = ?');
   remaining.forEach((s, i) => reindex.run(i, s.id));
 
   res.status(204).end();
@@ -122,7 +121,7 @@ router.put('/:sequenceId/reorder', (req, res) => {
   }
 
   // Validate: all IDs belong to this sequence and none are missing
-  const existing = db.prepare('SELECT id FROM steps WHERE sequence_id = ?').all(req.params.sequenceId);
+  const existing = getDb().prepare('SELECT id FROM steps WHERE sequence_id = ?').all(req.params.sequenceId);
   const existingIds = new Set(existing.map(s => s.id));
   for (const id of stepIds) {
     if (!existingIds.has(id)) return res.status(400).json({ error: 'Invalid step ID in reorder' });
@@ -131,8 +130,8 @@ router.put('/:sequenceId/reorder', (req, res) => {
     return res.status(400).json({ error: 'All steps must be included in reorder' });
   }
 
-  const update = db.prepare('UPDATE steps SET order_index = ? WHERE id = ? AND sequence_id = ?');
-  const reorder = db.transaction((ids, seqId) => {
+  const update = getDb().prepare('UPDATE steps SET order_index = ? WHERE id = ? AND sequence_id = ?');
+  const reorder = getDb().transaction((ids, seqId) => {
     ids.forEach((id, index) => {
       update.run(index, id, seqId);
     });
@@ -140,7 +139,7 @@ router.put('/:sequenceId/reorder', (req, res) => {
 
   reorder(stepIds, req.params.sequenceId);
 
-  const steps = db.prepare('SELECT * FROM steps WHERE sequence_id = ? ORDER BY order_index').all(req.params.sequenceId);
+  const steps = getDb().prepare('SELECT * FROM steps WHERE sequence_id = ? ORDER BY order_index').all(req.params.sequenceId);
   res.json(steps);
 });
 
