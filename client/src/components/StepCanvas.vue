@@ -32,16 +32,16 @@
     >
       <!-- Background image layer -->
       <v-layer>
-        <v-image :config="imageConfig" />
+        <v-image :config="{ ...imageConfig, preventDefault: !allowBrowserDefault }" />
       </v-layer>
 
       <!-- Annotations layer -->
       <v-layer ref="annotationLayer">
         <template v-for="(line, i) in lines" :key="i">
-          <v-line :config="line" />
+          <v-line :config="{ ...line, preventDefault: !allowBrowserDefault }" />
         </template>
         <template v-for="(label, i) in labels" :key="'t' + i">
-          <v-text :config="{ ...label, draggable: true }" @dragend="(e) => onLabelDragEnd(i, e)" />
+          <v-text :config="{ ...label, draggable: true, preventDefault: !allowBrowserDefault }" @dragend="(e) => onLabelDragEnd(i, e)" />
         </template>
       </v-layer>
     </v-stage>
@@ -134,6 +134,12 @@ const tools = [
   { id: 'eraser', icon: '\u232B', label: 'Eraser' }
 ]
 const tool = ref('select')
+
+// When in select mode, tell Konva shapes not to call evt.preventDefault()
+// on touch events. Konva registers non-passive touchstart listeners that
+// call preventDefault() when a shape is hit, which blocks browser scrolling
+// even when touch-action: pan-y is set. This is Konva's official fix.
+const allowBrowserDefault = computed(() => tool.value === 'select')
 
 // Sync touch-action on Konva's internal DOM elements so the browser
 // allows vertical scrolling when the user isn't drawing.
