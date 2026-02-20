@@ -1,5 +1,5 @@
 <template>
-  <div class="step-canvas" ref="container">
+  <div class="step-canvas" ref="container" :style="{ touchAction: tool === 'select' ? 'pan-y' : 'none' }">
     <div class="toolbar" ref="toolbarRef">
       <button
         v-for="t in tools"
@@ -391,7 +391,7 @@ onUnmounted(() => {
   align-items: center;
   width: 100%;
   height: 100%;
-  touch-action: none;
+  touch-action: none; /* overridden dynamically via inline style */
 }
 
 .toolbar {
