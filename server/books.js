@@ -90,6 +90,15 @@ function addBook(name, bookPath) {
   return book;
 }
 
+function updateBook(id, name) {
+  const books = readRegistry();
+  const book = books.find(b => b.id === id);
+  if (!book) return null;
+  book.name = name;
+  writeRegistry(books);
+  return book;
+}
+
 function removeBook(id) {
   if (id === 'default') return false;
   const books = readRegistry();
@@ -100,4 +109,4 @@ function removeBook(id) {
   return true;
 }
 
-module.exports = { init, listBooks, getBook, createBook, addBook, removeBook, resolveBookPath, writeRegistry };
+module.exports = { init, listBooks, getBook, createBook, addBook, updateBook, removeBook, resolveBookPath, writeRegistry };

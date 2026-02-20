@@ -53,9 +53,23 @@
           <div class="book-icon">&#128214;</div>
         </div>
         <div class="card-info">
-          <h3>{{ book.name }}</h3>
+          <input
+            v-if="editingId === book.id"
+            class="title-input"
+            v-model="editName"
+            @blur="saveBookName(book)"
+            @keyup.enter="$event.target.blur()"
+            @click.stop
+            ref="editInput"
+          />
+          <h3 v-else>{{ book.name }}</h3>
           <span class="step-count">{{ book.path }}</span>
         </div>
+        <button
+          class="rename-btn"
+          @click.stop="startRename(book)"
+          title="Rename book"
+        >&#9998;</button>
         <button
           class="export-btn"
           @click.stop="handleExportBook(book)"
@@ -76,7 +90,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { fetchBooks, createBook, addExistingBook, removeBook, exportBook, importBook } from '../api.js'
+import { fetchBooks, createBook, addExistingBook, updateBook, removeBook, exportBook, importBook } from '../api.js'
 
 const router = useRouter()
 const bookList = ref([])
@@ -88,6 +102,27 @@ const addFolderPath = ref('')
 const nameInput = ref(null)
 const addNameInput = ref(null)
 const importInput = ref(null)
+const editingId = ref(null)
+const editName = ref('')
+const editInput = ref(null)
+
+async function startRename(book) {
+  editingId.value = book.id
+  editName.value = book.name
+  await nextTick()
+  const inputs = editInput.value
+  const el = Array.isArray(inputs) ? inputs[0] : inputs
+  if (el) { el.focus(); el.select() }
+}
+
+async function saveBookName(book) {
+  const trimmed = editName.value.trim()
+  if (trimmed && trimmed !== book.name) {
+    await updateBook(book.id, trimmed)
+    await load()
+  }
+  editingId.value = null
+}
 
 async function load() {
   bookList.value = await fetchBooks()
@@ -234,6 +269,36 @@ onMounted(load)
   word-break: break-all;
 }
 
+.title-input {
+  font-size: 16px;
+  font-weight: bold;
+  background: #1e1e30;
+  color: #fff;
+  border: 1px solid #4fc3f7;
+  border-radius: 4px;
+  padding: 2px 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rename-btn {
+  position: absolute;
+  top: 8px;
+  right: 72px;
+  background: rgba(0,0,0,0.6);
+  color: #ffa726;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  padding: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .export-btn {
   position: absolute;
   top: 8px;
@@ -269,12 +334,14 @@ onMounted(load)
   justify-content: center;
 }
 
+.sequence-card:hover .rename-btn,
 .sequence-card:hover .export-btn,
 .sequence-card:hover .delete-btn {
   display: flex;
 }
 
 @media (hover: none) and (pointer: coarse) {
+  .rename-btn,
   .export-btn,
   .delete-btn {
     display: flex;

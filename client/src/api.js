@@ -24,6 +24,15 @@ export async function addExistingBook(name, path) {
   return res.json()
 }
 
+export async function updateBook(id, name) {
+  const res = await fetch(`${API}/books/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name })
+  })
+  return res.json()
+}
+
 export async function selectBook(id) {
   const res = await fetch(`${API}/books/${id}/select`, {
     method: 'POST'

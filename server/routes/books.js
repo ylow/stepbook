@@ -35,6 +35,15 @@ router.post('/add', (req, res) => {
   res.status(201).json(book);
 });
 
+// Rename a book
+router.put('/:id', (req, res) => {
+  const { name } = req.body;
+  if (!name || !name.trim()) return res.status(400).json({ error: 'Name is required' });
+  const updated = books.updateBook(req.params.id, name.trim());
+  if (!updated) return res.status(404).json({ error: 'Book not found' });
+  res.json(updated);
+});
+
 // Select/switch to a book
 router.post('/:id/select', (req, res) => {
   const book = books.getBook(req.params.id);
