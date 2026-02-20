@@ -23,6 +23,12 @@ function createApp() {
   const clientDist = path.join(__dirname, '..', 'client', 'dist');
   const hasClientDist = fs.existsSync(clientDist);
   if (hasClientDist) {
+    // Service worker files must never be cached — browser needs to fetch
+    // fresh on every check to detect updates promptly after deploys.
+    app.get(/^\/(sw|workbox-.*?)\.js$/, (req, res, next) => {
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      next();
+    });
     app.use(express.static(clientDist));
   }
 
