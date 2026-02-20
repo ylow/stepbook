@@ -1,5 +1,5 @@
 <template>
-  <div class="step-canvas" ref="container" :style="{ touchAction: tool === 'select' ? 'pan-y' : 'none' }">
+  <div class="step-canvas" ref="container" :class="{ 'is-select': tool === 'select' }" :style="{ touchAction: tool === 'select' ? 'pan-y' : 'none' }">
     <div class="toolbar" ref="toolbarRef">
       <button
         v-for="t in tools"
@@ -115,6 +115,8 @@ function loadImage() {
       canvasWidth.value = Math.floor(img.width * scale)
       canvasHeight.value = Math.floor(img.height * scale)
     }
+    // Re-apply touch-action after Konva re-renders its canvases
+    nextTick(updateTouchAction)
   }
   img.src = props.imageSrc
 }
@@ -405,6 +407,13 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   touch-action: none; /* overridden dynamically via inline style */
+}
+
+/* Ensure Konva's internal elements allow vertical scrolling in select mode,
+   even if Konva resets touch-action on its DOM after a re-render. */
+.step-canvas.is-select :deep(.konvajs-content),
+.step-canvas.is-select :deep(canvas) {
+  touch-action: pan-y !important;
 }
 
 .toolbar {
