@@ -45,6 +45,9 @@ function initSortable() {
   sortable = new Sortable(track.value, {
     animation: 150,
     ghostClass: 'sortable-ghost',
+    delay: 200,
+    delayOnTouchOnly: true,
+    touchStartThreshold: 5,
     onEnd(evt) {
       const newOrder = Array.from(track.value.children).map(el => el.dataset.id)
       emit('reorder', newOrder)
@@ -145,5 +148,15 @@ onUnmounted(() => sortable?.destroy())
 
 .sortable-ghost {
   opacity: 0.4;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .thumb-delete {
+    display: flex;
+  }
+
+  .nav-btn {
+    display: none;
+  }
 }
 </style>

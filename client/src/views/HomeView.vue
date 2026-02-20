@@ -171,4 +171,32 @@ onMounted(load)
   margin-top: 60px;
   font-size: 16px;
 }
+
+@media (max-width: 600px) {
+  .home {
+    padding: 16px;
+  }
+
+  .home-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .header-actions button {
+    width: 100%;
+  }
+
+  .create-form {
+    flex-direction: column;
+  }
+
+  .create-form input {
+    max-width: none;
+  }
+}
 </style>

@@ -19,6 +19,9 @@
         + Step
         <input type="file" accept="image/*" hidden @change="handleAddStep" multiple />
       </label>
+      <button class="notes-toggle" @click="showNotes = !showNotes">
+        {{ showNotes ? '✕ Notes' : '📝 Notes' }}
+      </button>
     </header>
 
     <div class="editor-body">
@@ -33,7 +36,7 @@
           <p>Upload an image or drag &amp; drop files to create the first step</p>
         </div>
       </div>
-      <div class="notes-area">
+      <div class="notes-area" :class="{ 'notes-visible': showNotes }">
         <StepNotes
           v-if="currentStep"
           :notes="currentStep.notes"
@@ -77,6 +80,7 @@ import StepCanvas from '../components/StepCanvas.vue'
 const route = useRoute()
 const sequence = ref(null)
 const selectedStepId = ref(null)
+const showNotes = ref(false)
 const dragOver = ref(false)
 const uploading = ref(false)
 const uploadProgress = ref(0)
@@ -307,5 +311,48 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
   border: 3px dashed #64b5f6;
   border-radius: 16px;
   background: rgba(63, 81, 181, 0.15);
+}
+
+.notes-toggle {
+  display: none;
+  background: #3a3a50;
+  color: #ccc;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .editor-body {
+    flex-direction: column;
+  }
+
+  .notes-area {
+    width: 100%;
+    display: none;
+    max-height: 40vh;
+    overflow-y: auto;
+    border-left: none;
+    border-top: 1px solid #333;
+  }
+
+  .notes-area.notes-visible {
+    display: block;
+  }
+
+  .notes-toggle {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .editor-header {
+    flex-wrap: wrap;
+  }
+
+  .title-input {
+    order: 3;
+    flex-basis: 100%;
+    font-size: 16px;
+  }
 }
 </style>

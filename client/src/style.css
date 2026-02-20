@@ -9,6 +9,11 @@ body {
   background: #1a1a2e;
   color: #e0e0e0;
   min-height: 100vh;
+  padding:
+    env(safe-area-inset-top)
+    env(safe-area-inset-right)
+    env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
 }
 
 a {
@@ -42,4 +47,20 @@ input, textarea {
 input:focus, textarea:focus {
   outline: none;
   border-color: #64b5f6;
+}
+
+#app {
+  overflow-x: hidden;
+}
+
+/* Touch device: enforce Apple HIG 44px tap targets */
+@media (hover: none) and (pointer: coarse) {
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  input, select, textarea {
+    min-height: 44px;
+  }
 }

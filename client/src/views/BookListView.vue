@@ -220,4 +220,38 @@ onMounted(load)
 .sequence-card:hover .delete-btn {
   display: flex;
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .delete-btn {
+    display: flex;
+  }
+}
+
+@media (max-width: 600px) {
+  .book-list {
+    padding: 16px;
+  }
+
+  .book-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .header-actions button {
+    width: 100%;
+  }
+
+  .create-form {
+    flex-direction: column;
+  }
+
+  .create-form input {
+    max-width: none;
+  }
+}
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="step-canvas" ref="container">
-    <div class="toolbar">
+    <div class="toolbar" ref="toolbarRef">
       <button
         v-for="t in tools"
         :key="t.id"
@@ -26,9 +26,9 @@
     <v-stage
       ref="stageRef"
       :config="stageConfig"
-      @mousedown="handleMouseDown"
-      @mousemove="handleMouseMove"
-      @mouseup="handleMouseUp"
+      @pointerdown="handleMouseDown"
+      @pointermove="handleMouseMove"
+      @pointerup="handleMouseUp"
     >
       <!-- Background image layer -->
       <v-layer>
@@ -60,6 +60,7 @@
         placeholder="Type text..."
         autofocus
       />
+      <button class="text-ok-btn" @click="commitText">OK</button>
     </div>
   </div>
 </template>
@@ -76,8 +77,16 @@ const emit = defineEmits(['update'])
 // Canvas sizing
 const container = ref(null)
 const stageRef = ref(null)
+const toolbarRef = ref(null)
 const canvasWidth = ref(800)
 const canvasHeight = ref(600)
+
+function getToolbarHeight() {
+  if (toolbarRef.value) {
+    return toolbarRef.value.getBoundingClientRect().height
+  }
+  return 44
+}
 
 const stageConfig = computed(() => ({
   width: canvasWidth.value,
@@ -101,7 +110,7 @@ function loadImage() {
     if (container.value) {
       const containerRect = container.value.getBoundingClientRect()
       const maxW = containerRect.width
-      const maxH = containerRect.height - 44 // toolbar height
+      const maxH = containerRect.height - getToolbarHeight()
       const scale = Math.min(maxW / img.width, maxH / img.height, 1)
       canvasWidth.value = Math.floor(img.width * scale)
       canvasHeight.value = Math.floor(img.height * scale)
@@ -305,7 +314,7 @@ const textInput = ref(null)
 
 function showTextInputAt(pos) {
   textInputPos.x = pos.x
-  textInputPos.y = pos.y + 44 // offset for toolbar
+  textInputPos.y = pos.y + getToolbarHeight()
   textInputValue.value = ''
   showTextInput.value = true
   nextTick(() => textInput.value?.focus())
@@ -315,7 +324,7 @@ function commitText() {
   if (textInputValue.value.trim()) {
     labels.value.push({
       x: textInputPos.x,
-      y: textInputPos.y - 44,
+      y: textInputPos.y - getToolbarHeight(),
       text: textInputValue.value.trim(),
       fontSize: strokeWidth.value * 4 + 8,
       fill: strokeColor.value
@@ -353,8 +362,25 @@ function handleKeyDown(e) {
   }
 }
 
-onMounted(() => window.addEventListener('keydown', handleKeyDown))
-onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
+let resizeObserver = null
+let resizeTimeout = null
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
+  if (container.value) {
+    resizeObserver = new ResizeObserver(() => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(() => {
+        if (bgImage.value) loadImage()
+      }, 150)
+    })
+    resizeObserver.observe(container.value)
+  }
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown)
+  clearTimeout(resizeTimeout)
+  resizeObserver?.disconnect()
+})
 </script>
 
 <style scoped>
@@ -365,6 +391,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
   align-items: center;
   width: 100%;
   height: 100%;
+  touch-action: none;
 }
 
 .toolbar {
@@ -376,6 +403,8 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
   border-radius: 6px;
   margin: 6px;
   z-index: 10;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .toolbar button {
@@ -432,5 +461,56 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
   color: white;
   border: 1px solid #64b5f6;
   border-radius: 4px;
+}
+
+.text-ok-btn {
+  display: none;
+  background: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Touch devices: show OK button, larger tap targets */
+@media (hover: none) and (pointer: coarse) {
+  .text-ok-btn {
+    display: inline-block;
+    min-height: 36px;
+    min-width: auto;
+  }
+
+  .text-input-overlay {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .toolbar button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .toolbar input[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .toolbar select {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .separator {
+    display: none;
+  }
+
+  .toolbar {
+    padding: 4px 6px;
+    gap: 2px;
+  }
 }
 </style>

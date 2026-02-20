@@ -127,4 +127,11 @@ defineEmits(['delete', 'export'])
 .sequence-card:hover .delete-btn {
   display: flex;
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .delete-btn,
+  .export-btn {
+    display: flex;
+  }
+}
 </style>
