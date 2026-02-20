@@ -25,7 +25,7 @@
     </header>
 
     <div class="editor-body">
-      <div class="canvas-area">
+      <div class="canvas-area" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
         <StepCanvas
           v-if="currentStep"
           :image-src="`/images/${currentStep.image_path}`"
@@ -35,6 +35,10 @@
         <div v-else class="empty-canvas">
           <p>Upload an image or drag &amp; drop files to create the first step</p>
         </div>
+        <label class="fab-add-photos">
+          +
+          <input type="file" accept="image/*" hidden @change="handleAddStep" multiple />
+        </label>
       </div>
       <div class="notes-area" :class="{ 'notes-visible': showNotes }">
         <StepNotes
@@ -86,6 +90,8 @@ const uploading = ref(false)
 const uploadProgress = ref(0)
 const uploadTotal = ref(0)
 let dragCounter = 0
+let touchStartX = 0
+let touchStartY = 0
 
 const currentStep = computed(() => {
   if (!sequence.value?.steps.length) return null
@@ -196,16 +202,35 @@ async function handleDeleteStep(stepId) {
   await load()
 }
 
+function goToStep(direction) {
+  if (!sequence.value?.steps.length) return
+  const steps = sequence.value.steps
+  const idx = steps.findIndex(s => s.id === selectedStepId.value)
+  if (direction === 'prev' && idx > 0) {
+    selectedStepId.value = steps[idx - 1].id
+  } else if (direction === 'next' && idx < steps.length - 1) {
+    selectedStepId.value = steps[idx + 1].id
+  }
+}
+
 function handleKeyDown(e) {
   if (!sequence.value?.steps.length) return
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
-  const steps = sequence.value.steps
-  const idx = steps.findIndex(s => s.id === selectedStepId.value)
-  if (e.key === 'ArrowLeft' && idx > 0) {
-    selectedStepId.value = steps[idx - 1].id
-  } else if (e.key === 'ArrowRight' && idx < steps.length - 1) {
-    selectedStepId.value = steps[idx + 1].id
-  }
+  if (e.key === 'ArrowLeft') goToStep('prev')
+  else if (e.key === 'ArrowRight') goToStep('next')
+}
+
+function onTouchStart(e) {
+  touchStartX = e.touches[0].clientX
+  touchStartY = e.touches[0].clientY
+}
+
+function onTouchEnd(e) {
+  const deltaX = e.changedTouches[0].clientX - touchStartX
+  const deltaY = e.changedTouches[0].clientY - touchStartY
+  if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) return
+  if (deltaX < 0) goToStep('next')
+  else goToStep('prev')
 }
 
 onMounted(() => {
@@ -319,6 +344,34 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
   color: #ccc;
   padding: 6px 12px;
   font-size: 14px;
+}
+
+.fab-add-photos {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .fab-add-photos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #3f51b5;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    z-index: 10;
+  }
+
+  .canvas-area {
+    position: relative;
+  }
 }
 
 @media (max-width: 768px) {

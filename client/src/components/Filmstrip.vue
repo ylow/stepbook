@@ -151,7 +151,7 @@ onUnmounted(() => sortable?.destroy())
 }
 
 @media (hover: none) and (pointer: coarse) {
-  .thumb-delete {
+  .filmstrip-thumb.active .thumb-delete {
     display: flex;
   }
 
