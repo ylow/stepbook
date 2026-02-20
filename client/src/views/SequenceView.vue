@@ -423,4 +423,21 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
     font-size: 16px;
   }
 }
+
+/* Landscape on touch devices: compact header */
+@media (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  .editor-header {
+    padding: var(--space-xs) var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .title-input {
+    font-size: 16px;
+  }
+
+  .add-step-btn {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 13px;
+  }
+}
 </style>

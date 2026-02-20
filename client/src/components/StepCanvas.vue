@@ -143,6 +143,10 @@ function updateTouchAction() {
   const value = tool.value === 'select' ? 'pan-y' : 'none'
   const el = stage.container()
   el.style.touchAction = value
+  // Konva creates a .konvajs-content div with touch-action:none that must
+  // also be overridden, otherwise the effective touch-action chain breaks.
+  const content = el.querySelector('.konvajs-content')
+  if (content) content.style.touchAction = value
   el.querySelectorAll('canvas').forEach(c => { c.style.touchAction = value })
 }
 watch(tool, updateTouchAction)
@@ -541,6 +545,39 @@ onUnmounted(() => {
   .toolbar {
     padding: var(--space-xs) var(--space-sm);
     gap: 2px;
+  }
+}
+
+/* Landscape on touch devices: compact single-row toolbar */
+@media (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  .toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 2px var(--space-sm);
+    margin: 2px;
+    gap: 2px;
+  }
+
+  .toolbar button {
+    min-height: 34px;
+    min-width: 34px;
+    padding: 4px 8px;
+    font-size: 13px;
+  }
+
+  .toolbar input[type="color"] {
+    width: 34px;
+    height: 34px;
+  }
+
+  .toolbar select {
+    min-height: 34px;
+    font-size: 11px;
+  }
+
+  .separator {
+    height: 20px;
+    margin: 0 2px;
   }
 }
 </style>

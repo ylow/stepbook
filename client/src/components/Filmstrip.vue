@@ -8,7 +8,8 @@
         :data-id="step.id"
         class="filmstrip-thumb"
         :class="{ active: step.id === selectedId }"
-        @click="$emit('select', step.id)"
+        @pointerdown="onThumbDown"
+        @pointerup="onThumbUp(step.id, $event)"
       >
         <img :src="`/images/${step.image_path}`" alt="" />
         <button class="thumb-delete" @click.stop="$emit('delete', step.id)" title="Delete step">&times;</button>
@@ -31,6 +32,24 @@ const emit = defineEmits(['select', 'reorder', 'delete'])
 
 const track = ref(null)
 let sortable = null
+let tapStartTime = 0
+let tapStartX = 0
+let tapStartY = 0
+
+function onThumbDown(e) {
+  tapStartTime = Date.now()
+  tapStartX = e.clientX
+  tapStartY = e.clientY
+}
+
+function onThumbUp(id, e) {
+  const elapsed = Date.now() - tapStartTime
+  const dx = Math.abs(e.clientX - tapStartX)
+  const dy = Math.abs(e.clientY - tapStartY)
+  if (elapsed < 300 && dx < 10 && dy < 10) {
+    emit('select', id)
+  }
+}
 
 function scrollLeft() {
   track.value?.scrollBy({ left: -200, behavior: 'smooth' })
@@ -164,6 +183,18 @@ onUnmounted(() => sortable?.destroy())
 
   .nav-btn {
     display: none;
+  }
+}
+
+/* Landscape on touch devices: compact filmstrip */
+@media (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  .filmstrip {
+    padding: var(--space-xs);
+  }
+
+  .filmstrip-thumb {
+    width: 60px;
+    height: 44px;
   }
 }
 </style>
