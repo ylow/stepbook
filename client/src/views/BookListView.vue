@@ -182,25 +182,25 @@ onMounted(load)
 .book-list {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 32px;
+  padding: var(--space-2xl);
 }
 
 .book-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: var(--space-xl);
 }
 
 .header-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-sm);
 }
 
 .create-form {
   display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
 }
 
 .create-form input {
@@ -209,7 +209,11 @@ onMounted(load)
 }
 
 .cancel-btn {
-  background: #555;
+  background: var(--bg-surface);
+}
+
+.cancel-btn:hover {
+  background: #3a3a50;
 }
 
 .book-icon {
@@ -218,10 +222,11 @@ onMounted(load)
   justify-content: center;
   height: 100%;
   font-size: 48px;
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-surface) 100%);
 }
 
 .empty {
-  color: #888;
+  color: var(--text-muted);
   text-align: center;
   margin-top: 60px;
   font-size: 16px;
@@ -234,129 +239,120 @@ onMounted(load)
 }
 
 .sequence-card {
-  background: #2a2a3e;
-  border-radius: 8px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   position: relative;
 }
 
 .sequence-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(100, 181, 246, 0.1);
 }
 
 .card-thumbnail {
   width: 100%;
   height: 120px;
   overflow: hidden;
-  background: #1e1e30;
+  background: var(--bg-elevated);
 }
 
 .card-info {
-  padding: 12px 16px;
+  padding: var(--space-md) var(--space-lg);
 }
 
 .card-info h3 {
   font-size: 16px;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-xs);
 }
 
 .step-count {
   font-size: 12px;
-  color: #888;
+  color: var(--text-muted);
   word-break: break-all;
 }
 
 .title-input {
   font-size: 16px;
   font-weight: bold;
-  background: #1e1e30;
+  background: var(--bg-elevated);
   color: #fff;
-  border: 1px solid #4fc3f7;
-  border-radius: 4px;
+  border: 1px solid var(--border-focus);
+  border-radius: var(--radius-sm);
   padding: 2px 6px;
   width: 100%;
   box-sizing: border-box;
 }
 
-.rename-btn {
+.rename-btn,
+.export-btn,
+.delete-btn {
   position: absolute;
-  top: 8px;
-  right: 72px;
-  background: rgba(0,0,0,0.6);
-  color: #ffa726;
+  top: var(--space-sm);
+  background: rgba(0, 0, 0, 0.6);
   border: none;
   border-radius: 50%;
   width: 28px;
   height: 28px;
-  font-size: 16px;
   padding: 0;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+}
+
+.rename-btn {
+  right: 72px;
+  color: var(--warning);
+  font-size: 16px;
 }
 
 .export-btn {
-  position: absolute;
-  top: 8px;
   right: 40px;
-  background: rgba(0,0,0,0.6);
-  color: #4fc3f7;
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  color: var(--border-focus);
   font-size: 18px;
-  padding: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
 }
 
 .delete-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0,0,0,0.6);
-  color: #ff5252;
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  right: var(--space-sm);
+  color: var(--danger);
   font-size: 18px;
-  padding: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
+}
+
+.rename-btn:hover,
+.export-btn:hover,
+.delete-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .sequence-card:hover .rename-btn,
 .sequence-card:hover .export-btn,
 .sequence-card:hover .delete-btn {
-  display: flex;
+  opacity: 1;
 }
 
 @media (hover: none) and (pointer: coarse) {
   .rename-btn,
   .export-btn,
   .delete-btn {
-    display: flex;
+    opacity: 1;
   }
 }
 
 @media (max-width: 600px) {
   .book-list {
-    padding: 16px;
+    padding: var(--space-lg);
   }
 
   .book-header {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
+    gap: var(--space-md);
   }
 
   .header-actions {

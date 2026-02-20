@@ -250,45 +250,56 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
 .editor-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #1e1e30;
-  border-bottom: 1px solid #333;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
 }
 
 .back-btn {
   background: none;
-  color: #64b5f6;
-  padding: 4px 8px;
+  color: var(--border-focus);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: var(--space-xs) var(--space-md);
+}
+
+.back-btn:hover {
+  background: rgba(100, 181, 246, 0.1);
+  border-color: var(--border-focus);
+  box-shadow: none;
+  transform: none;
 }
 
 .title-input {
   flex: 1;
   background: transparent;
   border: 1px solid transparent;
-  color: #e0e0e0;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
 }
 
 .title-input:focus {
-  border-color: #64b5f6;
-  background: #2a2a3e;
+  border-color: var(--border-focus);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
 }
 
 .add-step-btn {
-  background: #3f51b5;
+  background: var(--accent);
   color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 14px;
+  transition: background var(--transition-fast);
 }
 
 .add-step-btn:hover {
-  background: #5c6bc0;
+  background: var(--accent-hover);
 }
 
 .editor-body {
@@ -307,20 +318,20 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
 }
 
 .empty-canvas {
-  color: #666;
+  color: var(--text-muted);
   font-size: 16px;
 }
 
 .notes-area {
   width: 300px;
-  background: #1e1e30;
-  border-left: 1px solid #333;
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border);
 }
 
 .drop-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(26, 26, 46, 0.85);
+  background: rgba(26, 26, 46, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -329,21 +340,25 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
 }
 
 .drop-message {
-  color: #e0e0e0;
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 600;
-  padding: 32px 48px;
-  border: 3px dashed #64b5f6;
-  border-radius: 16px;
-  background: rgba(63, 81, 181, 0.15);
+  padding: var(--space-2xl) 48px;
+  border: 3px dashed var(--border-focus);
+  border-radius: var(--radius-lg);
+  background: var(--accent-glow);
 }
 
 .notes-toggle {
   display: none;
-  background: #3a3a50;
-  color: #ccc;
-  padding: 6px 12px;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  padding: var(--space-sm) var(--space-md);
   font-size: 14px;
+}
+
+.notes-toggle:hover {
+  background: #3a3a50;
 }
 
 .fab-add-photos {
@@ -356,16 +371,16 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
     align-items: center;
     justify-content: center;
     position: absolute;
-    bottom: 16px;
-    right: 16px;
+    bottom: var(--space-lg);
+    right: var(--space-lg);
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: #3f51b5;
+    background: var(--accent);
     color: white;
     font-size: 28px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    box-shadow: var(--shadow-md);
     z-index: 10;
   }
 
@@ -385,7 +400,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
     max-height: 40vh;
     overflow-y: auto;
     border-left: none;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border);
   }
 
   .notes-area.notes-visible {

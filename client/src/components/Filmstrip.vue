@@ -66,15 +66,15 @@ onUnmounted(() => sortable?.destroy())
 .filmstrip {
   display: flex;
   align-items: center;
-  background: #1e1e30;
-  padding: 8px;
-  gap: 8px;
-  border-top: 1px solid #333;
+  background: var(--bg-elevated);
+  padding: var(--space-sm);
+  gap: var(--space-sm);
+  border-top: 1px solid var(--border);
 }
 
 .filmstrip-track {
   display: flex;
-  gap: 8px;
+  gap: var(--space-sm);
   overflow-x: auto;
   flex: 1;
   scrollbar-width: thin;
@@ -84,15 +84,17 @@ onUnmounted(() => sortable?.destroy())
   flex-shrink: 0;
   width: 80px;
   height: 60px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;
   position: relative;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .filmstrip-thumb.active {
-  border-color: #64b5f6;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 8px rgba(100, 181, 246, 0.4);
 }
 
 .filmstrip-thumb img {
@@ -113,37 +115,42 @@ onUnmounted(() => sortable?.destroy())
 .nav-btn {
   background: #333;
   border: none;
-  color: #aaa;
-  padding: 8px;
-  border-radius: 4px;
+  color: var(--text-secondary);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
   font-size: 16px;
+  transition: background var(--transition-fast), color var(--transition-fast);
 }
 
 .nav-btn:hover {
   background: #444;
   color: white;
+  transform: none;
+  box-shadow: none;
 }
 
 .thumb-delete {
   position: absolute;
   top: 2px;
   right: 2px;
-  background: rgba(0,0,0,0.7);
-  color: #ff5252;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--danger);
   border: none;
   border-radius: 50%;
   width: 18px;
   height: 18px;
   font-size: 12px;
   padding: 0;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
 }
 
 .filmstrip-thumb:hover .thumb-delete {
-  display: flex;
+  opacity: 1;
 }
 
 .sortable-ghost {
@@ -152,7 +159,7 @@ onUnmounted(() => sortable?.destroy())
 
 @media (hover: none) and (pointer: coarse) {
   .filmstrip-thumb.active .thumb-delete {
-    display: flex;
+    opacity: 1;
   }
 
   .nav-btn {

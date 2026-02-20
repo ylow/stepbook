@@ -410,11 +410,12 @@ onUnmounted(() => {
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  background: #2a2a3e;
-  border-radius: 6px;
-  margin: 6px;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin: var(--space-sm);
   z-index: 10;
   flex-wrap: wrap;
   justify-content: center;
@@ -423,26 +424,29 @@ onUnmounted(() => {
 .toolbar button {
   background: #3a3a50;
   border: none;
-  color: #ccc;
-  padding: 6px 10px;
-  border-radius: 4px;
+  color: var(--text-secondary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
   font-size: 14px;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .toolbar button.active {
-  background: #3f51b5;
+  background: var(--accent);
   color: white;
+  box-shadow: 0 0 8px var(--accent-glow);
 }
 
 .toolbar button:hover {
   background: #4a4a60;
+  transform: none;
 }
 
 .separator {
   width: 1px;
   height: 24px;
-  background: #555;
-  margin: 0 4px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 var(--space-xs);
 }
 
 .toolbar input[type="color"] {
@@ -455,10 +459,10 @@ onUnmounted(() => {
 
 .toolbar select {
   background: #3a3a50;
-  color: #ccc;
-  border: 1px solid #555;
-  padding: 4px;
-  border-radius: 4px;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
   font-size: 12px;
 }
 
@@ -468,21 +472,25 @@ onUnmounted(() => {
 }
 
 .text-input-overlay input {
-  padding: 4px 8px;
+  padding: var(--space-xs) var(--space-sm);
   font-size: 16px;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   color: white;
-  border: 1px solid #64b5f6;
-  border-radius: 4px;
+  border: 1px solid var(--border-focus);
+  border-radius: var(--radius-sm);
+}
+
+.text-input-overlay input:focus {
+  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
 }
 
 .text-ok-btn {
   display: none;
-  background: #3f51b5;
+  background: var(--accent);
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-md);
   font-size: 14px;
   cursor: pointer;
 }
@@ -497,7 +505,7 @@ onUnmounted(() => {
 
   .text-input-overlay {
     display: flex;
-    gap: 4px;
+    gap: var(--space-xs);
     align-items: center;
   }
 
@@ -522,7 +530,7 @@ onUnmounted(() => {
   }
 
   .toolbar {
-    padding: 4px 6px;
+    padding: var(--space-xs) var(--space-sm);
     gap: 2px;
   }
 }

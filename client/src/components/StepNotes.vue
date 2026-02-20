@@ -35,13 +35,13 @@ function save() {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 16px;
+  padding: var(--space-lg);
 }
 
 .step-notes h3 {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-md);
   font-size: 14px;
-  color: #aaa;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -49,13 +49,18 @@ function save() {
 textarea {
   flex: 1;
   resize: none;
-  background: #2a2a3e;
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 12px;
-  color: #e0e0e0;
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  color: var(--text-primary);
   font-size: 14px;
   line-height: 1.6;
   font-family: inherit;
+}
+
+textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
 }
 </style>

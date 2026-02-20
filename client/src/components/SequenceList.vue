@@ -36,24 +36,25 @@ defineEmits(['delete', 'export'])
 }
 
 .sequence-card {
-  background: #2a2a3e;
-  border-radius: 8px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   position: relative;
 }
 
 .sequence-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(100, 181, 246, 0.1);
 }
 
 .card-thumbnail {
   width: 100%;
   height: 160px;
   overflow: hidden;
-  background: #1e1e30;
+  background: var(--bg-elevated);
 }
 
 .card-thumbnail img {
@@ -67,71 +68,68 @@ defineEmits(['delete', 'export'])
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #666;
+  color: var(--text-muted);
   font-size: 14px;
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-surface) 100%);
 }
 
 .card-info {
-  padding: 12px 16px;
+  padding: var(--space-md) var(--space-lg);
 }
 
 .card-info h3 {
   font-size: 16px;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-xs);
 }
 
 .step-count {
   font-size: 12px;
-  color: #888;
+  color: var(--text-muted);
 }
 
+.export-btn,
 .delete-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0,0,0,0.6);
-  color: #ff5252;
+  top: var(--space-sm);
+  background: rgba(0, 0, 0, 0.6);
   border: none;
   border-radius: 50%;
   width: 28px;
   height: 28px;
   font-size: 18px;
   padding: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.export-btn {
-  position: absolute;
-  top: 8px;
-  right: 42px;
-  background: rgba(0,0,0,0.6);
-  color: #64b5f6;
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  font-size: 18px;
-  padding: 0;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
 }
 
-.sequence-card:hover .export-btn {
-  display: flex;
+.export-btn {
+  right: 42px;
+  color: var(--border-focus);
 }
 
+.delete-btn {
+  right: var(--space-sm);
+  color: var(--danger);
+}
+
+.export-btn:hover,
+.delete-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.sequence-card:hover .export-btn,
 .sequence-card:hover .delete-btn {
-  display: flex;
+  opacity: 1;
 }
 
 @media (hover: none) and (pointer: coarse) {
   .delete-btn,
   .export-btn {
-    display: flex;
+    opacity: 1;
   }
 }
 </style>
