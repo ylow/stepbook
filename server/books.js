@@ -100,4 +100,4 @@ function removeBook(id) {
   return true;
 }
 
-module.exports = { init, listBooks, getBook, createBook, addBook, removeBook, resolveBookPath };
+module.exports = { init, listBooks, getBook, createBook, addBook, removeBook, resolveBookPath, writeRegistry };

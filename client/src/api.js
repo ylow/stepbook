@@ -35,6 +35,35 @@ export async function removeBook(id) {
   await fetch(`${API}/books/${id}`, { method: 'DELETE' })
 }
 
+export async function exportBook(id) {
+  const res = await fetch(`${API}/books/${id}/export`)
+  if (!res.ok) throw new Error('Export failed')
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = res.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || 'book.zip'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+export async function importBook(file) {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch(`${API}/books/import`, {
+    method: 'POST',
+    body: form
+  })
+  if (!res.ok) {
+    let msg = 'Import failed'
+    try { const err = await res.json(); msg = err.error || msg } catch {}
+    throw new Error(msg)
+  }
+  return res.json()
+}
+
 // Sequence API
 export async function fetchSequences() {
   const res = await fetch(`${API}/sequences`)

@@ -4,7 +4,15 @@
       <h1>Stepbook</h1>
       <div class="header-actions">
         <button @click="showAddFolder = true">Add Folder</button>
+        <button @click="importInput?.click()">Import Book</button>
         <button @click="showCreate = true">+ New Book</button>
+        <input
+          type="file"
+          accept=".zip"
+          ref="importInput"
+          style="display: none"
+          @change="handleImportBook"
+        />
       </div>
     </header>
 
@@ -49,6 +57,11 @@
           <span class="step-count">{{ book.path }}</span>
         </div>
         <button
+          class="export-btn"
+          @click.stop="handleExportBook(book)"
+          title="Export book"
+        >&#8681;</button>
+        <button
           v-if="book.id !== 'default'"
           class="delete-btn"
           @click.stop="handleRemove(book)"
@@ -63,7 +76,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { fetchBooks, createBook, addExistingBook, removeBook } from '../api.js'
+import { fetchBooks, createBook, addExistingBook, removeBook, exportBook, importBook } from '../api.js'
 
 const router = useRouter()
 const bookList = ref([])
@@ -74,6 +87,7 @@ const addFolderName = ref('')
 const addFolderPath = ref('')
 const nameInput = ref(null)
 const addNameInput = ref(null)
+const importInput = ref(null)
 
 async function load() {
   bookList.value = await fetchBooks()
@@ -104,6 +118,26 @@ async function handleRemove(book) {
   if (!confirm(`Remove "${book.name}" from the book list? (Files will not be deleted)`)) return
   await removeBook(book.id)
   await load()
+}
+
+async function handleExportBook(book) {
+  try {
+    await exportBook(book.id)
+  } catch (err) {
+    alert('Export failed: ' + err.message)
+  }
+}
+
+async function handleImportBook(e) {
+  const file = e.target.files[0]
+  if (!file) return
+  try {
+    await importBook(file)
+    await load()
+  } catch (err) {
+    alert('Import failed: ' + err.message)
+  }
+  e.target.value = ''
 }
 
 onMounted(load)
@@ -200,6 +234,24 @@ onMounted(load)
   word-break: break-all;
 }
 
+.export-btn {
+  position: absolute;
+  top: 8px;
+  right: 40px;
+  background: rgba(0,0,0,0.6);
+  color: #4fc3f7;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 18px;
+  padding: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .delete-btn {
   position: absolute;
   top: 8px;
@@ -217,11 +269,13 @@ onMounted(load)
   justify-content: center;
 }
 
+.sequence-card:hover .export-btn,
 .sequence-card:hover .delete-btn {
   display: flex;
 }
 
 @media (hover: none) and (pointer: coarse) {
+  .export-btn,
   .delete-btn {
     display: flex;
   }
