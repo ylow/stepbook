@@ -132,6 +132,18 @@ const tools = [
   { id: 'eraser', icon: '\u232B', label: 'Eraser' }
 ]
 const tool = ref('select')
+
+// Sync touch-action on Konva's internal DOM elements so the browser
+// allows vertical scrolling when the user isn't drawing.
+function updateTouchAction() {
+  const stage = stageRef.value?.getStage()
+  if (!stage) return
+  const value = tool.value === 'select' ? 'pan-y' : 'none'
+  const el = stage.container()
+  el.style.touchAction = value
+  el.querySelectorAll('canvas').forEach(c => { c.style.touchAction = value })
+}
+watch(tool, updateTouchAction)
 const strokeColor = ref('#ff0000')
 const strokeWidth = ref(4)
 
@@ -366,6 +378,7 @@ let resizeObserver = null
 let resizeTimeout = null
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
+  nextTick(updateTouchAction)
   if (container.value) {
     resizeObserver = new ResizeObserver(() => {
       clearTimeout(resizeTimeout)
