@@ -6,6 +6,15 @@ set -e
 # and configures tailscale serve for HTTPS.
 # Safe to re-run (idempotent).
 
+# ── 0. Usage ─────────────────────────────────────────────────────────────────
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <data-dir>"
+  echo "  <data-dir>  Directory for Stepbook data (e.g. /var/lib/stepbook)"
+  exit 1
+fi
+
+DATA_DIR="$1"
+
 # ── 1. Require root ──────────────────────────────────────────────────────────
 if [ "$(id -u)" -ne 0 ]; then
   echo "Error: this script must be run as root (or with sudo)."
@@ -66,7 +75,6 @@ cd "$REPO_DIR"
 npm run build
 
 # ── 7. Create data directory ────────────────────────────────────────────────
-DATA_DIR="/var/lib/stepbook"
 mkdir -p "$DATA_DIR"
 echo "==> Data directory: $DATA_DIR"
 
