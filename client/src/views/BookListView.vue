@@ -84,6 +84,10 @@
       </div>
     </div>
     <p v-else class="empty">No books yet. Create one to get started.</p>
+
+    <footer class="build-info">
+      v{{ appVersion }} &middot; {{ gitBranch }} &middot; {{ gitHash }}
+    </footer>
   </div>
 </template>
 
@@ -91,6 +95,10 @@
 import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { fetchBooks, createBook, addExistingBook, updateBook, removeBook, exportBook, importBook } from '../api.js'
+
+const appVersion = __APP_VERSION__
+const gitHash = __GIT_HASH__
+const gitBranch = __GIT_BRANCH__
 
 const router = useRouter()
 const bookList = ref([])
@@ -342,6 +350,14 @@ onMounted(load)
   .delete-btn {
     opacity: 1;
   }
+}
+
+.build-info {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 11px;
+  margin-top: var(--space-2xl);
+  padding: var(--space-md) 0;
 }
 
 @media (max-width: 600px) {

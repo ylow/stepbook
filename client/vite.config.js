@@ -1,8 +1,19 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+import { execSync } from 'child_process'
+import { readFileSync } from 'fs'
+
+const gitHash = execSync('git rev-parse --short HEAD').toString().trim()
+const gitBranch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'))
 
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+    __GIT_HASH__: JSON.stringify(gitHash),
+    __GIT_BRANCH__: JSON.stringify(gitBranch),
+  },
   plugins: [
     vue(),
     VitePWA({
