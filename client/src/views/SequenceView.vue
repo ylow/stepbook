@@ -67,7 +67,7 @@
     <div
       v-if="isMobile && !editMode && currentStep?.notes"
       class="caption-bar"
-      :class="{ 'overlay-hidden': !overlayVisible, 'caption-expanded': captionExpanded }"
+      :class="{ 'caption-expanded': captionExpanded }"
       @click="captionExpanded = !captionExpanded"
     >
       <p>{{ currentStep.notes }}</p>
