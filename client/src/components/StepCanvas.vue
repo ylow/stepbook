@@ -1,5 +1,5 @@
 <template>
-  <div class="step-canvas" ref="container" :class="{ 'is-select': tool === 'select' }" :style="{ touchAction: tool === 'select' ? 'pan-y' : 'none' }">
+  <div class="step-canvas" ref="container" :class="{ 'is-select': tool === 'select', 'no-toolbar': hideToolbar }" :style="{ touchAction: tool === 'select' ? 'pan-y' : 'none' }">
     <div class="toolbar" ref="toolbarRef" v-if="!hideToolbar">
       <button
         v-for="t in tools"
@@ -425,6 +425,11 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   touch-action: none; /* overridden dynamically via inline style */
+}
+
+/* View mode: center the stage vertically (no toolbar taking top space) */
+.step-canvas.no-toolbar {
+  justify-content: center;
 }
 
 /* Ensure Konva's internal elements allow vertical scrolling in select mode,
