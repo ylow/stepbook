@@ -578,7 +578,7 @@ onUnmounted(() => {
 
 /* Caption bar for notes */
 .caption-bar {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
