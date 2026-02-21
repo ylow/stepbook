@@ -1,13 +1,23 @@
 <template>
   <div
     class="sequence-editor"
+    :class="{ 'mobile-view-mode': isMobile && !editMode }"
     v-if="sequence"
     @dragenter.prevent="onDragEnter"
     @dragover.prevent
     @dragleave="onDragLeave"
     @drop.prevent="onDrop"
   >
-    <header class="editor-header">
+    <!-- Mobile view mode: floating overlay -->
+    <div v-if="isMobile && !editMode" class="view-overlay" :class="{ 'overlay-hidden': !overlayVisible }">
+      <div class="view-overlay-top">
+        <button class="view-back-btn" @click="$router.push('/book/' + route.params.bookId)">&#8592;</button>
+        <span v-if="sequence.steps.length" class="step-counter">{{ currentStepIndex + 1 }} / {{ sequence.steps.length }}</span>
+      </div>
+    </div>
+
+    <!-- Header: hidden in mobile view mode -->
+    <header v-if="!isMobile || editMode" class="editor-header">
       <button class="back-btn" @click="$router.push('/book/' + route.params.bookId)">← Back</button>
       <input
         class="title-input"
@@ -30,6 +40,7 @@
           v-if="currentStep"
           :image-src="`/images/${currentStep.image_path}`"
           :annotations="currentStep.annotations"
+          :hide-toolbar="isMobile && !editMode"
           @update="saveAnnotations"
         />
         <div v-else class="empty-canvas">
@@ -39,6 +50,9 @@
           +
           <input type="file" accept="image/*" hidden @change="handleAddStep" multiple />
         </label>
+        <!-- Mobile: Edit FAB (view mode) / Done FAB (edit mode) -->
+        <button v-if="isMobile && !editMode" class="mode-fab edit-fab" @click="enterEditMode">&#x270E;</button>
+        <button v-if="isMobile && editMode" class="mode-fab done-fab" @click="exitEditMode">&#x2713; Done</button>
       </div>
       <div class="notes-area" :class="{ 'notes-visible': showNotes }">
         <StepNotes
@@ -49,8 +63,18 @@
       </div>
     </div>
 
+    <!-- Mobile view mode: caption bar for notes -->
+    <div
+      v-if="isMobile && !editMode && currentStep?.notes"
+      class="caption-bar"
+      :class="{ 'overlay-hidden': !overlayVisible, 'caption-expanded': captionExpanded }"
+      @click="captionExpanded = !captionExpanded"
+    >
+      <p>{{ currentStep.notes }}</p>
+    </div>
+
     <Filmstrip
-      v-if="sequence.steps.length"
+      v-if="sequence.steps.length && (!isMobile || editMode)"
       :steps="sequence.steps"
       :selected-id="currentStep?.id"
       @select="selectStep"
@@ -73,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import exifr from 'exifr'
 import { fetchSequence, updateSequence, addStep, updateStep, reorderSteps, deleteStep } from '../api.js'
@@ -92,10 +116,43 @@ const uploadTotal = ref(0)
 let dragCounter = 0
 let touchStartX = 0
 let touchStartY = 0
+let touchStartTime = 0
+
+// Mobile view/edit mode
+const editMode = ref(false)
+const overlayVisible = ref(true)
+const captionExpanded = ref(false)
+const isMobile = ref(false)
+const mobileQuery = window.matchMedia('(hover: none) and (pointer: coarse)')
+isMobile.value = mobileQuery.matches
+
+function onMobileChange(e) {
+  isMobile.value = e.matches
+  if (!e.matches) editMode.value = false
+}
+
+function enterEditMode() {
+  editMode.value = true
+}
+
+function exitEditMode() {
+  editMode.value = false
+  overlayVisible.value = true
+  captionExpanded.value = false
+}
 
 const currentStep = computed(() => {
   if (!sequence.value?.steps.length) return null
   return sequence.value.steps.find(s => s.id === selectedStepId.value) || sequence.value.steps[0]
+})
+
+const currentStepIndex = computed(() => {
+  if (!sequence.value?.steps.length || !currentStep.value) return 0
+  return sequence.value.steps.findIndex(s => s.id === currentStep.value.id)
+})
+
+watch(currentStep, () => {
+  captionExpanded.value = false
 })
 
 async function load() {
@@ -223,11 +280,23 @@ function handleKeyDown(e) {
 function onTouchStart(e) {
   touchStartX = e.touches[0].clientX
   touchStartY = e.touches[0].clientY
+  touchStartTime = Date.now()
 }
 
 function onTouchEnd(e) {
   const deltaX = e.changedTouches[0].clientX - touchStartX
   const deltaY = e.changedTouches[0].clientY - touchStartY
+  const elapsed = Date.now() - touchStartTime
+
+  // In mobile view mode, detect taps to toggle overlay
+  if (isMobile.value && !editMode.value) {
+    const isTap = elapsed < 300 && Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10
+    if (isTap && !e.target.closest('.mode-fab')) {
+      overlayVisible.value = !overlayVisible.value
+      return
+    }
+  }
+
   if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) return
   if (deltaX < 0) goToStep('next')
   else goToStep('prev')
@@ -236,15 +305,21 @@ function onTouchEnd(e) {
 onMounted(() => {
   load()
   window.addEventListener('keydown', handleKeyDown)
+  mobileQuery.addEventListener('change', onMobileChange)
 })
-onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown)
+  mobileQuery.removeEventListener('change', onMobileChange)
+})
 </script>
 
 <style scoped>
 .sequence-editor {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
 }
 
 .editor-header {
@@ -439,5 +514,149 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
     padding: var(--space-xs) var(--space-md);
     font-size: 13px;
   }
+}
+
+/* ── Mobile View Mode ── */
+
+.mobile-view-mode .fab-add-photos {
+  display: none !important;
+}
+
+/* Floating overlay (back + step counter) */
+.view-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.view-overlay.overlay-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.view-overlay-top {
+  display: flex;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  padding-top: calc(var(--space-md) + env(safe-area-inset-top, 0px));
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent);
+  pointer-events: auto;
+}
+
+.view-back-btn {
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: var(--space-sm) var(--space-lg);
+  font-size: 18px;
+  min-height: 44px;
+  min-width: 44px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.view-back-btn:hover {
+  background: rgba(0, 0, 0, 0.6);
+  transform: none;
+  box-shadow: none;
+}
+
+.step-counter {
+  flex: 1;
+  text-align: center;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  margin-right: 44px; /* balance back button width */
+}
+
+/* Caption bar for notes */
+.caption-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: var(--space-md) var(--space-lg);
+  z-index: 20;
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+
+.caption-bar.overlay-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.caption-bar p {
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.caption-bar.caption-expanded p {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+/* Edit / Done FAB */
+.mode-fab {
+  position: absolute;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+  box-shadow: var(--shadow-md);
+  border: none;
+  min-height: auto;
+  min-width: auto;
+  padding: 0;
+}
+
+.edit-fab {
+  background: var(--accent);
+  color: white;
+}
+
+.edit-fab:hover {
+  background: var(--accent-hover);
+  transform: none;
+}
+
+.done-fab {
+  width: auto;
+  padding: 0 var(--space-lg);
+  border-radius: var(--radius-full);
+  background: #388e3c;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  gap: var(--space-xs);
+}
+
+.done-fab:hover {
+  background: #43a047;
+  transform: none;
 }
 </style>

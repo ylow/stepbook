@@ -1,6 +1,6 @@
 <template>
   <div class="step-canvas" ref="container" :class="{ 'is-select': tool === 'select' }" :style="{ touchAction: tool === 'select' ? 'pan-y' : 'none' }">
-    <div class="toolbar" ref="toolbarRef">
+    <div class="toolbar" ref="toolbarRef" v-if="!hideToolbar">
       <button
         v-for="t in tools"
         :key="t.id"
@@ -70,7 +70,8 @@ import { ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } from
 
 const props = defineProps({
   imageSrc: { type: String, required: true },
-  annotations: { type: String, default: '{}' }
+  annotations: { type: String, default: '{}' },
+  hideToolbar: { type: Boolean, default: false }
 })
 const emit = defineEmits(['update'])
 
@@ -82,6 +83,7 @@ const canvasWidth = ref(800)
 const canvasHeight = ref(600)
 
 function getToolbarHeight() {
+  if (props.hideToolbar) return 0
   if (toolbarRef.value) {
     return toolbarRef.value.getBoundingClientRect().height
   }
@@ -122,6 +124,12 @@ function loadImage() {
 }
 
 watch(() => props.imageSrc, loadImage)
+watch(() => props.hideToolbar, (hidden) => {
+  if (hidden) tool.value = 'select'
+  nextTick(() => {
+    if (bgImage.value) loadImage()
+  })
+})
 onMounted(loadImage)
 
 // Tools
