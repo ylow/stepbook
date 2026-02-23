@@ -81,6 +81,12 @@ const stageRef = ref(null)
 const toolbarRef = ref(null)
 const canvasWidth = ref(800)
 const canvasHeight = ref(600)
+const naturalWidth = ref(0)
+const naturalHeight = ref(0)
+const displayScale = computed(() => {
+  if (!naturalWidth.value) return 1
+  return canvasWidth.value / naturalWidth.value
+})
 
 function getToolbarHeight() {
   if (props.hideToolbar) return 0
@@ -92,22 +98,28 @@ function getToolbarHeight() {
 
 const stageConfig = computed(() => ({
   width: canvasWidth.value,
-  height: canvasHeight.value
+  height: canvasHeight.value,
+  scaleX: displayScale.value,
+  scaleY: displayScale.value
 }))
 
 // Background image
 const bgImage = ref(null)
 const imageConfig = computed(() => ({
   image: bgImage.value,
-  width: canvasWidth.value,
-  height: canvasHeight.value
+  width: naturalWidth.value || canvasWidth.value,
+  height: naturalHeight.value || canvasHeight.value
 }))
+
+let pendingMigration = false
 
 function loadImage() {
   const img = new Image()
   img.crossOrigin = 'anonymous'
   img.onload = () => {
     bgImage.value = img
+    naturalWidth.value = img.width
+    naturalHeight.value = img.height
     // Fit canvas to container while maintaining aspect ratio
     if (container.value) {
       const containerRect = container.value.getBoundingClientRect()
@@ -117,10 +129,36 @@ function loadImage() {
       canvasWidth.value = Math.floor(img.width * scale)
       canvasHeight.value = Math.floor(img.height * scale)
     }
+    if (pendingMigration) {
+      pendingMigration = false
+      migrateAnnotationsToNative()
+    }
     // Re-apply touch-action after Konva re-renders its canvases
     nextTick(updateTouchAction)
   }
   img.src = props.imageSrc
+}
+
+function migrateAnnotationsToNative() {
+  const s = displayScale.value
+  if (s <= 0 || s === 1) return
+  lines.value = lines.value.map(line => ({
+    ...line,
+    points: line.points.map(p => p / s),
+    strokeWidth: (line.strokeWidth || 2) / s,
+    ...(line.pointerLength != null ? { pointerLength: line.pointerLength / s } : {}),
+    ...(line.pointerWidth != null ? { pointerWidth: line.pointerWidth / s } : {})
+  }))
+  labels.value = labels.value.map(label => ({
+    ...label,
+    x: label.x / s,
+    y: label.y / s,
+    fontSize: (label.fontSize || 16) / s
+  }))
+  history.value = []
+  historyIndex.value = -1
+  saveHistory()
+  emitUpdate()
 }
 
 watch(() => props.imageSrc, loadImage)
@@ -180,10 +218,12 @@ function loadAnnotations() {
     const data = JSON.parse(props.annotations || '{}')
     lines.value = data.lines || []
     labels.value = data.labels || []
+    pendingMigration = data._v !== 2
     saveHistory()
   } catch {
     lines.value = []
     labels.value = []
+    pendingMigration = false
   }
 }
 
@@ -229,7 +269,7 @@ function clearAnnotations() {
 }
 
 function emitUpdate() {
-  emit('update', JSON.stringify({ lines: lines.value, labels: labels.value }))
+  emit('update', JSON.stringify({ lines: lines.value, labels: labels.value, _v: 2 }))
 }
 
 // Drawing handlers
@@ -238,7 +278,9 @@ let lineStartPos = null
 function getPointerPos() {
   const stage = stageRef.value?.getStage()
   if (!stage) return { x: 0, y: 0 }
-  return stage.getPointerPosition()
+  const pos = stage.getPointerPosition()
+  const s = displayScale.value
+  return { x: pos.x / s, y: pos.y / s }
 }
 
 function handleMouseDown() {
@@ -269,7 +311,7 @@ function handleMouseDown() {
     lines.value.push({
       points: [pos.x, pos.y],
       stroke: strokeColor.value,
-      strokeWidth: strokeWidth.value,
+      strokeWidth: strokeWidth.value / displayScale.value,
       lineCap: 'round',
       lineJoin: 'round'
     })
@@ -278,7 +320,7 @@ function handleMouseDown() {
     lines.value.push({
       points: [pos.x, pos.y, pos.x, pos.y],
       stroke: strokeColor.value,
-      strokeWidth: strokeWidth.value,
+      strokeWidth: strokeWidth.value / displayScale.value,
       lineCap: 'round'
     })
   }
@@ -307,8 +349,8 @@ function handleMouseUp() {
   // If arrow tool, add an arrowhead by setting Konva arrow properties
   if (tool.value === 'arrow') {
     const last = lines.value[lines.value.length - 1]
-    last.pointerLength = 10
-    last.pointerWidth = 10
+    last.pointerLength = 10 / displayScale.value
+    last.pointerWidth = 10 / displayScale.value
     lines.value = [...lines.value]
   }
 
@@ -318,7 +360,7 @@ function handleMouseUp() {
 
 // Eraser
 function eraseAt(pos) {
-  const threshold = 15
+  const threshold = 15 / displayScale.value
   // Remove lines near the click
   lines.value = lines.value.filter(line => {
     for (let i = 0; i < line.points.length; i += 2) {
@@ -345,8 +387,9 @@ const textInputValue = ref('')
 const textInput = ref(null)
 
 function showTextInputAt(pos) {
-  textInputPos.x = pos.x
-  textInputPos.y = pos.y + getToolbarHeight()
+  const s = displayScale.value
+  textInputPos.x = pos.x * s
+  textInputPos.y = pos.y * s + getToolbarHeight()
   textInputValue.value = ''
   showTextInput.value = true
   nextTick(() => textInput.value?.focus())
@@ -354,11 +397,12 @@ function showTextInputAt(pos) {
 
 function commitText() {
   if (textInputValue.value.trim()) {
+    const s = displayScale.value
     labels.value.push({
-      x: textInputPos.x,
-      y: textInputPos.y - getToolbarHeight(),
+      x: textInputPos.x / s,
+      y: (textInputPos.y - getToolbarHeight()) / s,
       text: textInputValue.value.trim(),
-      fontSize: strokeWidth.value * 4 + 8,
+      fontSize: (strokeWidth.value * 4 + 8) / s,
       fill: strokeColor.value
     })
     labels.value = [...labels.value]
