@@ -248,6 +248,27 @@ async function onDrop(e) {
   await uploadFiles(files)
 }
 
+async function handlePaste(e) {
+  if (!sequence.value) return
+  const items = e.clipboardData?.items
+  if (!items) return
+  const imageFiles = []
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      const blob = item.getAsFile()
+      if (blob) {
+        const ext = item.type.split('/')[1].replace('jpeg', 'jpg')
+        const file = new File([blob], `pasted-image.${ext}`, { type: item.type })
+        imageFiles.push(file)
+      }
+    }
+  }
+  if (imageFiles.length) {
+    e.preventDefault()
+    await uploadFiles(imageFiles)
+  }
+}
+
 async function handleReorder(stepIds) {
   await reorderSteps(sequence.value.id, stepIds)
   await load()
@@ -305,10 +326,12 @@ function onTouchEnd(e) {
 onMounted(() => {
   load()
   window.addEventListener('keydown', handleKeyDown)
+  window.addEventListener('paste', handlePaste)
   mobileQuery.addEventListener('change', onMobileChange)
 })
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
+  window.removeEventListener('paste', handlePaste)
   mobileQuery.removeEventListener('change', onMobileChange)
 })
 </script>
