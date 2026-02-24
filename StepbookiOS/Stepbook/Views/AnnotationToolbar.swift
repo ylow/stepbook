@@ -21,7 +21,7 @@ enum DrawingTool: String, CaseIterable {
         case .pen: return PKInkingTool(.pen, color: color, width: width)
         case .marker: return PKInkingTool(.marker, color: color, width: width)
         case .pencil: return PKInkingTool(.pencil, color: color, width: width)
-        case .eraser: return PKEraserTool(.bitmap)
+        case .eraser: return PKEraserTool(.vector)
         }
     }
 }
@@ -46,6 +46,9 @@ struct AnnotationToolbar: View {
     @Binding var strokeWidth: StrokeWidth
     let onUndo: () -> Void
     let onRedo: () -> Void
+    let onClearAll: () -> Void
+
+    @State private var showClearConfirmation = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -82,13 +85,20 @@ struct AnnotationToolbar: View {
                     .frame(width: 36, height: 36)
             }
 
-            Spacer()
-
             Button(action: onUndo) {
                 Image(systemName: "arrow.uturn.backward")
             }
             Button(action: onRedo) {
                 Image(systemName: "arrow.uturn.forward")
+            }
+            Button {
+                showClearConfirmation = true
+            } label: {
+                Image(systemName: "trash")
+                    .font(.system(size: 16))
+            }
+            .confirmationDialog("Clear all annotations?", isPresented: $showClearConfirmation) {
+                Button("Clear All", role: .destructive, action: onClearAll)
             }
         }
         .padding(.horizontal, 12)

@@ -16,6 +16,8 @@
     <string>1</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0.0</string>
+    <key>UILaunchScreen</key>
+    <dict/>
     <key>NSCameraUsageDescription</key>
     <string>Stepbook needs camera access to capture step images.</string>
     <key>NSPhotoLibraryUsageDescription</key>

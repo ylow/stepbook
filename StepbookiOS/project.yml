@@ -2,7 +2,7 @@ name: Stepbook
 options:
   bundleIdPrefix: com.stepbook
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "17.6"
   xcodeVersion: "15.0"
 settings:
   SWIFT_VERSION: "5.9"

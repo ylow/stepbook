@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -54,7 +54,7 @@
 		2FA75D3EF81FF0A5D42C2E02 /* AnnotationConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationConverter.swift; sourceTree = "<group>"; };
 		388A85676FEADD7C78FDD80A /* AnnotationToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationToolbar.swift; sourceTree = "<group>"; };
 		39F512170E9CDBD80F35C08C /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
-		3AC1879AB9044431600D9B1D /* Stepbook.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Stepbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3AC1879AB9044431600D9B1D /* Stepbook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stepbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C51FD3C03E518B6E4D047AB /* BookListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookListView.swift; sourceTree = "<group>"; };
 		3F1A52268AA05F94B96642B6 /* SequenceEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceEditorView.swift; sourceTree = "<group>"; };
 		543EAF32D7CD4B1B957CB970 /* StepCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepCanvasView.swift; sourceTree = "<group>"; };
@@ -228,11 +228,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-					53B3BC919186C5D1BEB8B3DE = {
-						DevelopmentTeam = "";
-					};
-				};
 			};
 			buildConfigurationList = AF81F79F1B22862D443B6781 /* Build configuration list for PBXProject "Stepbook" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -244,7 +239,7 @@
 			);
 			mainGroup = 791804F5A272147076C88CCF;
 			packageReferences = (
-				D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB" */,
 				A73ACA18A72637BA99A33739 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			projectDirPath = "";
@@ -339,7 +334,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = RXZ6EC7AH4;
 				INFOPLIST_FILE = Stepbook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -356,7 +351,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = RXZ6EC7AH4;
 				INFOPLIST_FILE = Stepbook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -419,7 +414,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -476,7 +471,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -545,7 +540,7 @@
 				minimumVersion = 0.9.0;
 			};
 		};
-		D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+		D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift";
 			requirement = {
@@ -563,7 +558,7 @@
 		};
 		F4420513E5E1040D3CDDB69F /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 /* End XCSwiftPackageProductDependency section */

@@ -25,6 +25,9 @@ struct SequenceEditorView: View {
     @State private var selectedPhotos: [PhotosPickerItem] = []
     @State private var showingCamera = false
 
+    // Canvas actions (undo/redo bridge)
+    @State private var canvasActionHandler = CanvasActionHandler()
+
     // Export
     @State private var exportURL: URL?
     @State private var showShareSheet = false
@@ -161,21 +164,24 @@ struct SequenceEditorView: View {
                 selectedTool: $selectedTool,
                 selectedColor: $selectedColor,
                 strokeWidth: $strokeWidth,
-                onUndo: { /* PencilKit handles undo internally */ },
-                onRedo: { /* PencilKit handles redo internally */ }
+                onUndo: { canvasActionHandler.undo() },
+                onRedo: { canvasActionHandler.redo() },
+                onClearAll: { canvasActionHandler.clearAll() }
             )
 
-            if let step = currentStep, let store = imageStore,
-               let image = store.loadImage(path: step.imagePath) {
+            if let step = currentStep, let store = imageStore {
                 StepCanvasView(
-                    image: image,
+                    imagePath: step.imagePath,
+                    imageStore: store,
                     annotations: AnnotationData.parse(from: step.annotations),
                     isEditing: true,
                     tool: currentPKTool,
+                    actionHandler: canvasActionHandler,
                     onAnnotationsChanged: { annotation in
                         saveAnnotations(stepId: step.id, annotation: annotation)
                     }
                 )
+                .id(step.id) // Recreate canvas when step changes
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.black)
             }
@@ -187,6 +193,7 @@ struct SequenceEditorView: View {
                         saveNotes(stepId: step.id, notes: notes)
                     }
                 )
+                .id(step.id) // Force recreation when step changes
                 .frame(height: 120)
             }
 
@@ -320,13 +327,21 @@ struct SequenceEditorView: View {
 
     private func saveAnnotations(stepId: String, annotation: AnnotationData) {
         guard let db = appDb.activeDatabase else { return }
-        _ = try? db.updateStep(id: stepId, annotations: annotation.toJSONString(), notes: nil)
-        // Don't reload here -- it would reset the canvas
+        let jsonString = annotation.toJSONString()
+        _ = try? db.updateStep(id: stepId, annotations: jsonString, notes: nil)
+        // Update in-memory steps so view mode renders the latest annotations
+        if let idx = steps.firstIndex(where: { $0.id == stepId }) {
+            steps[idx].annotations = jsonString
+        }
     }
 
     private func saveNotes(stepId: String, notes: String) {
         guard let db = appDb.activeDatabase else { return }
         _ = try? db.updateStep(id: stepId, annotations: nil, notes: notes)
+        // Update in-memory steps so view mode caption bar reflects changes
+        if let idx = steps.firstIndex(where: { $0.id == stepId }) {
+            steps[idx].notes = notes
+        }
     }
 
     private func importPhotos(_ items: [PhotosPickerItem]) async {
