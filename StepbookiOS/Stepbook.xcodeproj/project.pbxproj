@@ -10,11 +10,13 @@
 		06C31C94DDE936422FCF8DD2 /* StepbookApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DBF59C74224E118DFB2D38 /* StepbookApp.swift */; };
 		08D0A43F770D4DDDA0F3F579 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F512170E9CDBD80F35C08C /* Sequence.swift */; };
 		0B1D93E633FE230A90AFF4CC /* DatabaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EA54DA07FB553D48FF4FDC /* DatabaseTests.swift */; };
+		0BCB6CA65C6A10A625451E74 /* AnnotationConverterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E182CA601E0ACA4B1DF025F6 /* AnnotationConverterTests.swift */; };
 		2A946AAE95B5C7F270D3012B /* BookDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F811054EA6FDA62DD75B6DB0 /* BookDatabase.swift */; };
 		33AB50A15DDEB59401809D21 /* ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA330EAFB0D0329A024674CC /* ModelsTests.swift */; };
 		373E62F4348A91B7A737481F /* StepbookTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B100A3DB26AE0A9EE92CE1C /* StepbookTests.swift */; };
 		38B9C753EFA8C53D59F0182E /* Step.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E3475280D7E3D80AD7EFB85 /* Step.swift */; };
 		38BE91269A8C7C6539CA080C /* AnnotationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E9BB98C531005AB5BAA01C /* AnnotationData.swift */; };
+		3E33ED527B29EFBA7A420E6B /* AnnotationConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA75D3EF81FF0A5D42C2E02 /* AnnotationConverter.swift */; };
 		473674FAA7F64CE26AFC2EFF /* ImportExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4CA832D0E130ECC202695D /* ImportExportService.swift */; };
 		6A81B3924DB613F5B1CDAE1D /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C266EB25CC5F2AA5C79640F0 /* ImageStore.swift */; };
 		73E77480F5DEB4ED390B7776 /* AppDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F23682F08E3E37E30228CD /* AppDatabase.swift */; };
@@ -41,6 +43,7 @@
 		0B100A3DB26AE0A9EE92CE1C /* StepbookTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepbookTests.swift; sourceTree = "<group>"; };
 		11DBF59C74224E118DFB2D38 /* StepbookApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepbookApp.swift; sourceTree = "<group>"; };
 		1B9798E150C8F348789344AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2FA75D3EF81FF0A5D42C2E02 /* AnnotationConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationConverter.swift; sourceTree = "<group>"; };
 		39F512170E9CDBD80F35C08C /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
 		3AC1879AB9044431600D9B1D /* Stepbook.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Stepbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D4CA832D0E130ECC202695D /* ImportExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportService.swift; sourceTree = "<group>"; };
@@ -53,6 +56,7 @@
 		BF03C6D8D33C3E937C7683D8 /* Book.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
 		C266EB25CC5F2AA5C79640F0 /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
 		C9EA54DA07FB553D48FF4FDC /* DatabaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTests.swift; sourceTree = "<group>"; };
+		E182CA601E0ACA4B1DF025F6 /* AnnotationConverterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationConverterTests.swift; sourceTree = "<group>"; };
 		E86CE9056C49E32D15C10488 /* StepbookTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = StepbookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2342FF14554577FCE8704F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F811054EA6FDA62DD75B6DB0 /* BookDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDatabase.swift; sourceTree = "<group>"; };
@@ -127,6 +131,7 @@
 		AECD78C4C7AE0D675C096070 /* StepbookTests */ = {
 			isa = PBXGroup;
 			children = (
+				E182CA601E0ACA4B1DF025F6 /* AnnotationConverterTests.swift */,
 				C9EA54DA07FB553D48FF4FDC /* DatabaseTests.swift */,
 				784FFFB9486F9FF7E443CF9F /* ImageStoreTests.swift */,
 				B3EB719D070CC2F2A64F20FD /* ImportExportTests.swift */,
@@ -139,6 +144,7 @@
 		BC9CEA04F37CC5312353FC1F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2FA75D3EF81FF0A5D42C2E02 /* AnnotationConverter.swift */,
 				C266EB25CC5F2AA5C79640F0 /* ImageStore.swift */,
 				5D4CA832D0E130ECC202695D /* ImportExportService.swift */,
 			);
@@ -237,6 +243,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BCB6CA65C6A10A625451E74 /* AnnotationConverterTests.swift in Sources */,
 				0B1D93E633FE230A90AFF4CC /* DatabaseTests.swift in Sources */,
 				E5E78E92F9DB9B862988A4DF /* ImageStoreTests.swift in Sources */,
 				924FE384EC0CBDA5BE1E6398 /* ImportExportTests.swift in Sources */,
@@ -249,6 +256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E33ED527B29EFBA7A420E6B /* AnnotationConverter.swift in Sources */,
 				38BE91269A8C7C6539CA080C /* AnnotationData.swift in Sources */,
 				73E77480F5DEB4ED390B7776 /* AppDatabase.swift in Sources */,
 				E5BDE209EA26D26EA280405A /* Book.swift in Sources */,
