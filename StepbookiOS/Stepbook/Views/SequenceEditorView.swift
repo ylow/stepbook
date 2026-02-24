@@ -387,10 +387,19 @@ struct StepNotesEditor: View {
         self.onSave = onSave
     }
 
+    @FocusState private var isFocused: Bool
+
     var body: some View {
         TextEditor(text: $text)
+            .focused($isFocused)
             .padding(8)
             .background(.ultraThinMaterial)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { isFocused = false }
+                }
+            }
             .onChange(of: text) { _, newValue in
                 onSave(newValue)
             }

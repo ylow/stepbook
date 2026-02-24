@@ -22,13 +22,13 @@ struct StepPageView: View {
     let step: Step
     let imageStore: ImageStore
     @State private var renderedImage: UIImage?
+    @State private var zoomId = UUID()
 
     var body: some View {
         Group {
             if let rendered = renderedImage {
-                Image(uiImage: rendered)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                ZoomableImageView(image: rendered)
+                    .id(zoomId)
             } else {
                 ProgressView()
                     .tint(.white)
@@ -36,6 +36,7 @@ struct StepPageView: View {
         }
         .task(id: "\(step.id)|\(step.annotations)") {
             renderedImage = await renderAsync()
+            zoomId = UUID() // reset zoom when image changes
         }
     }
 
@@ -158,5 +159,78 @@ struct StepPageView: View {
         ctx.addLine(to: p2)
         ctx.closePath()
         ctx.fillPath()
+    }
+}
+
+// MARK: - Zoomable Image View
+
+struct ZoomableImageView: UIViewRepresentable {
+    let image: UIImage
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    func makeUIView(context: Context) -> UIScrollView {
+        let scrollView = UIScrollView()
+        scrollView.delegate = context.coordinator
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 5.0
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.bouncesZoom = true
+        scrollView.backgroundColor = .clear
+
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(imageView)
+        context.coordinator.imageView = imageView
+
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            imageView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            imageView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
+        ])
+
+        // Double-tap to toggle zoom
+        let doubleTap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleDoubleTap(_:)))
+        doubleTap.numberOfTapsRequired = 2
+        scrollView.addGestureRecognizer(doubleTap)
+        context.coordinator.scrollView = scrollView
+
+        return scrollView
+    }
+
+    func updateUIView(_ scrollView: UIScrollView, context: Context) {
+        context.coordinator.imageView?.image = image
+    }
+
+    class Coordinator: NSObject, UIScrollViewDelegate {
+        weak var imageView: UIImageView?
+        weak var scrollView: UIScrollView?
+
+        func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+            imageView
+        }
+
+        @objc func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+            guard let scrollView else { return }
+            if scrollView.zoomScale > scrollView.minimumZoomScale {
+                scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
+            } else {
+                let location = gesture.location(in: imageView)
+                let zoomRect = CGRect(
+                    x: location.x - 50,
+                    y: location.y - 50,
+                    width: 100,
+                    height: 100
+                )
+                scrollView.zoom(to: zoomRect, animated: true)
+            }
+        }
     }
 }
