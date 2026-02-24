@@ -15,11 +15,13 @@
 		373E62F4348A91B7A737481F /* StepbookTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B100A3DB26AE0A9EE92CE1C /* StepbookTests.swift */; };
 		38B9C753EFA8C53D59F0182E /* Step.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E3475280D7E3D80AD7EFB85 /* Step.swift */; };
 		38BE91269A8C7C6539CA080C /* AnnotationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E9BB98C531005AB5BAA01C /* AnnotationData.swift */; };
+		6A81B3924DB613F5B1CDAE1D /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C266EB25CC5F2AA5C79640F0 /* ImageStore.swift */; };
 		73E77480F5DEB4ED390B7776 /* AppDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F23682F08E3E37E30228CD /* AppDatabase.swift */; };
 		8681C2531DD3DE4D8E36442D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B9798E150C8F348789344AF /* Assets.xcassets */; };
 		B052C800CC8AC16BCFDA0679 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4F060DB3142AA6C8E192890B /* ZIPFoundation */; };
 		C63D259763C08AE9C5AA17AF /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = F4420513E5E1040D3CDDB69F /* GRDB */; };
 		E5BDE209EA26D26EA280405A /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF03C6D8D33C3E937C7683D8 /* Book.swift */; };
+		E5E78E92F9DB9B862988A4DF /* ImageStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784FFFB9486F9FF7E443CF9F /* ImageStoreTests.swift */; };
 		FFCB0EC5AA4738CF5F175554 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B932B74359E21E3D9ADC9CE1 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -40,10 +42,12 @@
 		39F512170E9CDBD80F35C08C /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
 		3AC1879AB9044431600D9B1D /* Stepbook.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Stepbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60E9BB98C531005AB5BAA01C /* AnnotationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationData.swift; sourceTree = "<group>"; };
+		784FFFB9486F9FF7E443CF9F /* ImageStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStoreTests.swift; sourceTree = "<group>"; };
 		92F23682F08E3E37E30228CD /* AppDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDatabase.swift; sourceTree = "<group>"; };
 		9E3475280D7E3D80AD7EFB85 /* Step.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Step.swift; sourceTree = "<group>"; };
 		B932B74359E21E3D9ADC9CE1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BF03C6D8D33C3E937C7683D8 /* Book.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
+		C266EB25CC5F2AA5C79640F0 /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
 		C9EA54DA07FB553D48FF4FDC /* DatabaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTests.swift; sourceTree = "<group>"; };
 		E86CE9056C49E32D15C10488 /* StepbookTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = StepbookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2342FF14554577FCE8704F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -84,6 +88,7 @@
 				11DBF59C74224E118DFB2D38 /* StepbookApp.swift */,
 				3A8D1B93501ECA3B707564E5 /* Database */,
 				0D2AEDCF227E4F2D36950297 /* Models */,
+				BC9CEA04F37CC5312353FC1F /* Services */,
 			);
 			path = Stepbook;
 			sourceTree = "<group>";
@@ -119,10 +124,19 @@
 			isa = PBXGroup;
 			children = (
 				C9EA54DA07FB553D48FF4FDC /* DatabaseTests.swift */,
+				784FFFB9486F9FF7E443CF9F /* ImageStoreTests.swift */,
 				FA330EAFB0D0329A024674CC /* ModelsTests.swift */,
 				0B100A3DB26AE0A9EE92CE1C /* StepbookTests.swift */,
 			);
 			path = StepbookTests;
+			sourceTree = "<group>";
+		};
+		BC9CEA04F37CC5312353FC1F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				C266EB25CC5F2AA5C79640F0 /* ImageStore.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -218,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B1D93E633FE230A90AFF4CC /* DatabaseTests.swift in Sources */,
+				E5E78E92F9DB9B862988A4DF /* ImageStoreTests.swift in Sources */,
 				33AB50A15DDEB59401809D21 /* ModelsTests.swift in Sources */,
 				373E62F4348A91B7A737481F /* StepbookTests.swift in Sources */,
 			);
@@ -232,6 +247,7 @@
 				E5BDE209EA26D26EA280405A /* Book.swift in Sources */,
 				2A946AAE95B5C7F270D3012B /* BookDatabase.swift in Sources */,
 				FFCB0EC5AA4738CF5F175554 /* ContentView.swift in Sources */,
+				6A81B3924DB613F5B1CDAE1D /* ImageStore.swift in Sources */,
 				08D0A43F770D4DDDA0F3F579 /* Sequence.swift in Sources */,
 				38B9C753EFA8C53D59F0182E /* Step.swift in Sources */,
 				06C31C94DDE936422FCF8DD2 /* StepbookApp.swift in Sources */,
