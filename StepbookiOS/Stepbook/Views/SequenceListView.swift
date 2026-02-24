@@ -8,6 +8,8 @@ struct SequenceListView: View {
     @State private var showingNewSequence = false
     @State private var newTitle = ""
     @State private var showingImport = false
+    @State private var exportURL: URL?
+    @State private var showShareSheet = false
 
     var body: some View {
         Group {
@@ -22,6 +24,16 @@ struct SequenceListView: View {
                     ForEach(sequences) { seq in
                         NavigationLink(value: seq) {
                             SequenceRow(sequence: seq, imageStore: imageStore)
+                        }
+                        .contextMenu {
+                            Button {
+                                exportSequence(seq)
+                            } label: {
+                                Label("Export", systemImage: "square.and.arrow.up")
+                            }
+                            Button("Delete", role: .destructive) {
+                                deleteSequence(seq)
+                            }
                         }
                         .swipeActions(edge: .trailing) {
                             Button("Delete", role: .destructive) {
@@ -61,6 +73,11 @@ struct SequenceListView: View {
                 importSequence(from: url)
             }
         }
+        .sheet(isPresented: $showShareSheet) {
+            if let url = exportURL {
+                ShareSheet(url: url)
+            }
+        }
         .task { await loadSequences() }
     }
 
@@ -86,6 +103,17 @@ struct SequenceListView: View {
         imageStore?.deleteSequenceImages(sequenceId: seq.id)
         try? db.deleteSequence(id: seq.id)
         Task { await loadSequences() }
+    }
+
+    private func exportSequence(_ seq: Sequence) {
+        guard let db = appDb.activeDatabase, let store = imageStore else { return }
+        let service = ImportExportService(database: db, imageStore: store)
+        do {
+            exportURL = try service.exportSequence(id: seq.id)
+            showShareSheet = true
+        } catch {
+            print("Export failed: \(error)")
+        }
     }
 
     private func importSequence(from url: URL) {
