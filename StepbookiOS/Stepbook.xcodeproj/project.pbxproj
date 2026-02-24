@@ -1,0 +1,456 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		06C31C94DDE936422FCF8DD2 /* StepbookApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DBF59C74224E118DFB2D38 /* StepbookApp.swift */; };
+		373E62F4348A91B7A737481F /* StepbookTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B100A3DB26AE0A9EE92CE1C /* StepbookTests.swift */; };
+		8681C2531DD3DE4D8E36442D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B9798E150C8F348789344AF /* Assets.xcassets */; };
+		B052C800CC8AC16BCFDA0679 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4F060DB3142AA6C8E192890B /* ZIPFoundation */; };
+		C63D259763C08AE9C5AA17AF /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = F4420513E5E1040D3CDDB69F /* GRDB */; };
+		FFCB0EC5AA4738CF5F175554 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B932B74359E21E3D9ADC9CE1 /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F085F4DB37F95A430D255992 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF9FAC6B2ED9E0A4DAA51CBE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 53B3BC919186C5D1BEB8B3DE;
+			remoteInfo = Stepbook;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0B100A3DB26AE0A9EE92CE1C /* StepbookTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepbookTests.swift; sourceTree = "<group>"; };
+		11DBF59C74224E118DFB2D38 /* StepbookApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepbookApp.swift; sourceTree = "<group>"; };
+		1B9798E150C8F348789344AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3AC1879AB9044431600D9B1D /* Stepbook.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Stepbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B932B74359E21E3D9ADC9CE1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E86CE9056C49E32D15C10488 /* StepbookTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = StepbookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F2342FF14554577FCE8704F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E1594089E6F9F8F50EC07874 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C63D259763C08AE9C5AA17AF /* GRDB in Frameworks */,
+				B052C800CC8AC16BCFDA0679 /* ZIPFoundation in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		324DC52252B14AB22E1DF68D /* Stepbook */ = {
+			isa = PBXGroup;
+			children = (
+				1B9798E150C8F348789344AF /* Assets.xcassets */,
+				B932B74359E21E3D9ADC9CE1 /* ContentView.swift */,
+				F2342FF14554577FCE8704F7 /* Info.plist */,
+				11DBF59C74224E118DFB2D38 /* StepbookApp.swift */,
+			);
+			path = Stepbook;
+			sourceTree = "<group>";
+		};
+		61F9BD0BC97A5A8A9B79BBD0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3AC1879AB9044431600D9B1D /* Stepbook.app */,
+				E86CE9056C49E32D15C10488 /* StepbookTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		791804F5A272147076C88CCF = {
+			isa = PBXGroup;
+			children = (
+				324DC52252B14AB22E1DF68D /* Stepbook */,
+				AECD78C4C7AE0D675C096070 /* StepbookTests */,
+				61F9BD0BC97A5A8A9B79BBD0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AECD78C4C7AE0D675C096070 /* StepbookTests */ = {
+			isa = PBXGroup;
+			children = (
+				0B100A3DB26AE0A9EE92CE1C /* StepbookTests.swift */,
+			);
+			path = StepbookTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		53B3BC919186C5D1BEB8B3DE /* Stepbook */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 271F07EFADCF1700C006B8DD /* Build configuration list for PBXNativeTarget "Stepbook" */;
+			buildPhases = (
+				DC76EE302C25FAE390DDA92E /* Sources */,
+				D9209B7FDAA223C9F82C5DE5 /* Resources */,
+				E1594089E6F9F8F50EC07874 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Stepbook;
+			packageProductDependencies = (
+				F4420513E5E1040D3CDDB69F /* GRDB */,
+				4F060DB3142AA6C8E192890B /* ZIPFoundation */,
+			);
+			productName = Stepbook;
+			productReference = 3AC1879AB9044431600D9B1D /* Stepbook.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B0FFF446ECF3E4C94772BCC4 /* StepbookTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC954A5A6575457B72C0538F /* Build configuration list for PBXNativeTarget "StepbookTests" */;
+			buildPhases = (
+				C5CC73E8F3532D7322FD37F5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B1480A87AD9A2246BA384D40 /* PBXTargetDependency */,
+			);
+			name = StepbookTests;
+			productName = StepbookTests;
+			productReference = E86CE9056C49E32D15C10488 /* StepbookTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EF9FAC6B2ED9E0A4DAA51CBE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					53B3BC919186C5D1BEB8B3DE = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = AF81F79F1B22862D443B6781 /* Build configuration list for PBXProject "Stepbook" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 791804F5A272147076C88CCF;
+			packageReferences = (
+				D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				A73ACA18A72637BA99A33739 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+			);
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				53B3BC919186C5D1BEB8B3DE /* Stepbook */,
+				B0FFF446ECF3E4C94772BCC4 /* StepbookTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D9209B7FDAA223C9F82C5DE5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8681C2531DD3DE4D8E36442D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C5CC73E8F3532D7322FD37F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				373E62F4348A91B7A737481F /* StepbookTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC76EE302C25FAE390DDA92E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FFCB0EC5AA4738CF5F175554 /* ContentView.swift in Sources */,
+				06C31C94DDE936422FCF8DD2 /* StepbookApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B1480A87AD9A2246BA384D40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 53B3BC919186C5D1BEB8B3DE /* Stepbook */;
+			targetProxy = F085F4DB37F95A430D255992 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		178A14ABBEE274043023870E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.stepbook.StepbookTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Stepbook.app/Stepbook";
+			};
+			name = Debug;
+		};
+		1B0BDD0840714D20F7356AF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = Stepbook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.stepbook.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		2761CF8279CD51FAAC3DA309 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = Stepbook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.stepbook.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		553B8AB070AEDE6500241E18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		8B82FC6ED80BFC5CD10BE6FD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		FEF1A1FEB8F2AAAA6C9A424F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.stepbook.StepbookTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Stepbook.app/Stepbook";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		271F07EFADCF1700C006B8DD /* Build configuration list for PBXNativeTarget "Stepbook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2761CF8279CD51FAAC3DA309 /* Debug */,
+				1B0BDD0840714D20F7356AF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AF81F79F1B22862D443B6781 /* Build configuration list for PBXProject "Stepbook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				553B8AB070AEDE6500241E18 /* Debug */,
+				8B82FC6ED80BFC5CD10BE6FD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DC954A5A6575457B72C0538F /* Build configuration list for PBXNativeTarget "StepbookTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				178A14ABBEE274043023870E /* Debug */,
+				FEF1A1FEB8F2AAAA6C9A424F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A73ACA18A72637BA99A33739 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
+		D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4F060DB3142AA6C8E192890B /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A73ACA18A72637BA99A33739 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+		F4420513E5E1040D3CDDB69F /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = EF9FAC6B2ED9E0A4DAA51CBE /* Project object */;
+}

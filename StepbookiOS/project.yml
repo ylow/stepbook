@@ -1,0 +1,37 @@
+name: Stepbook
+options:
+  bundleIdPrefix: com.stepbook
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+settings:
+  SWIFT_VERSION: "5.9"
+targets:
+  Stepbook:
+    type: application
+    platform: iOS
+    sources:
+      - Stepbook
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.stepbook.app
+      INFOPLIST_FILE: Stepbook/Info.plist
+      DEVELOPMENT_TEAM: ""
+    dependencies:
+      - package: GRDB
+      - package: ZIPFoundation
+  StepbookTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - StepbookTests
+    settings:
+      GENERATE_INFOPLIST_FILE: "YES"
+    dependencies:
+      - target: Stepbook
+packages:
+  GRDB:
+    url: https://github.com/groue/GRDB.swift
+    from: "7.0.0"
+  ZIPFoundation:
+    url: https://github.com/weichsel/ZIPFoundation
+    from: "0.9.0"
