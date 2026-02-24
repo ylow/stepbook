@@ -1,4 +1,5 @@
 import Foundation
+import ZIPFoundation
 
 /// Manages the top-level book registry (books.json) and provides
 /// access to individual book databases.
@@ -95,5 +96,152 @@ final class AppDatabase {
 
     func bookDirectory(for book: Book) -> URL {
         rootDirectory.appendingPathComponent(book.path)
+    }
+
+    // MARK: - Book Export & Import
+
+    /// Export a book as a ZIP file (web-compatible format).
+    /// Contains manifest.json, stepbook.db, and images/.
+    func exportBook(id: String) throws -> URL {
+        guard let book = books.first(where: { $0.id == id }) else {
+            throw StepbookError(message: "Book not found")
+        }
+        let bookDir = bookDirectory(for: book)
+        let dbURL = bookDir.appendingPathComponent("stepbook.db")
+        let imagesDir = bookDir.appendingPathComponent("images")
+
+        guard FileManager.default.fileExists(atPath: dbURL.path) else {
+            throw StepbookError(message: "Book database not found")
+        }
+
+        // Checkpoint WAL to ensure all data is in the main db file
+        let db = try BookDatabase(directory: bookDir)
+        try db.dbPool.write { db in
+            try db.execute(sql: "PRAGMA wal_checkpoint(TRUNCATE)")
+        }
+
+        // Build manifest
+        struct BookManifest: Codable {
+            var version: Int
+            var book: BookInfo
+            struct BookInfo: Codable {
+                var name: String
+            }
+        }
+        let manifest = BookManifest(version: 1, book: .init(name: book.name))
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let manifestData = try encoder.encode(manifest)
+
+        // Create ZIP
+        let safeName = book.name
+            .replacingOccurrences(of: "[^a-zA-Z0-9_-]", with: "_", options: .regularExpression)
+            .prefix(50)
+        let zipURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("\(safeName).zip")
+        try? FileManager.default.removeItem(at: zipURL)
+
+        let archive = try Archive(url: zipURL, accessMode: .create)
+
+        // Add manifest.json
+        try archive.addEntry(
+            with: "manifest.json",
+            type: .file,
+            uncompressedSize: Int64(manifestData.count)
+        ) { (position: Int64, size: Int) -> Data in
+            let start = Int(position)
+            return manifestData[start..<start+size]
+        }
+
+        // Add stepbook.db
+        try archive.addEntry(with: "stepbook.db", fileURL: dbURL)
+
+        // Add all images
+        let fm = FileManager.default
+        if fm.fileExists(atPath: imagesDir.path),
+           let enumerator = fm.enumerator(at: imagesDir, includingPropertiesForKeys: nil) {
+            while let fileURL = enumerator.nextObject() as? URL {
+                guard fileURL.isFileURL else { continue }
+                var isDir: ObjCBool = false
+                guard fm.fileExists(atPath: fileURL.path, isDirectory: &isDir), !isDir.boolValue else { continue }
+                let relativePath = fileURL.path.replacingOccurrences(
+                    of: imagesDir.path + "/", with: ""
+                )
+                try archive.addEntry(with: "images/\(relativePath)", fileURL: fileURL)
+            }
+        }
+
+        return zipURL
+    }
+
+    /// Import a book from a ZIP file (web-compatible format).
+    /// The ZIP must contain manifest.json, stepbook.db, and images/.
+    func importBook(from zipURL: URL) throws -> Book {
+        let archive = try Archive(url: zipURL, accessMode: .read)
+
+        // Read manifest
+        guard let manifestEntry = archive["manifest.json"] else {
+            throw StepbookError(message: "Missing manifest.json in ZIP")
+        }
+        var manifestData = Data()
+        _ = try archive.extract(manifestEntry) { data in
+            manifestData.append(data)
+        }
+
+        struct BookManifest: Codable {
+            var version: Int
+            var book: BookInfo
+            struct BookInfo: Codable {
+                var name: String
+            }
+        }
+
+        let manifest = try JSONDecoder().decode(BookManifest.self, from: manifestData)
+        guard !manifest.book.name.isEmpty else {
+            throw StepbookError(message: "Book name is empty")
+        }
+
+        // Verify stepbook.db exists in archive
+        guard archive["stepbook.db"] != nil else {
+            throw StepbookError(message: "Missing stepbook.db in ZIP")
+        }
+
+        // Create a new book
+        let bookId = UUID().uuidString
+        let bookDir = rootDirectory.appendingPathComponent(bookId)
+        let imagesDir = bookDir.appendingPathComponent("images")
+        try FileManager.default.createDirectory(at: imagesDir, withIntermediateDirectories: true)
+
+        let allowedImageExtensions: Set<String> = ["jpg", "jpeg", "png", "gif", "webp"]
+
+        // Extract entries
+        for entry in archive {
+            let name = entry.path
+
+            if name == "stepbook.db" {
+                let destURL = bookDir.appendingPathComponent("stepbook.db")
+                _ = try archive.extract(entry, to: destURL)
+            } else if name.hasPrefix("images/") && entry.type == .file {
+                let ext = URL(fileURLWithPath: name).pathExtension.lowercased()
+                guard allowedImageExtensions.contains(ext) else { continue }
+                // Guard against path traversal
+                let relativePath = String(name.dropFirst("images/".count))
+                guard !relativePath.contains("..") else { continue }
+                let destURL = imagesDir.appendingPathComponent(relativePath)
+                let parentDir = destURL.deletingLastPathComponent()
+                try FileManager.default.createDirectory(at: parentDir, withIntermediateDirectories: true)
+                _ = try archive.extract(entry, to: destURL)
+            }
+        }
+
+        // Register the book
+        let book = Book(id: bookId, name: manifest.book.name, path: bookId)
+        books.append(book)
+        saveRegistry()
+
+        // Run migrations on the imported database to ensure schema compatibility
+        _ = try BookDatabase(directory: bookDir)
+
+        return book
     }
 }

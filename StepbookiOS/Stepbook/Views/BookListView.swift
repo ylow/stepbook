@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct BookListView: View {
     @Environment(AppDatabase.self) private var appDb
@@ -6,6 +7,10 @@ struct BookListView: View {
     @State private var newBookName = ""
     @State private var renamingBook: Book?
     @State private var renameText = ""
+    @State private var showingImport = false
+    @State private var importError: String?
+    @State private var exportURL: URL?
+    @State private var showShareSheet = false
 
     var body: some View {
         List {
@@ -28,6 +33,11 @@ struct BookListView: View {
                     .padding(.vertical, 4)
                 }
                 .contextMenu {
+                    Button {
+                        exportBook(book)
+                    } label: {
+                        Label("Export", systemImage: "square.and.arrow.up")
+                    }
                     Button("Rename") {
                         renameText = book.name
                         renamingBook = book
@@ -42,7 +52,12 @@ struct BookListView: View {
         }
         .navigationTitle("Books")
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    showingImport = true
+                } label: {
+                    Image(systemName: "square.and.arrow.down")
+                }
                 Button {
                     newBookName = ""
                     showingNewBook = true
@@ -50,6 +65,24 @@ struct BookListView: View {
                     Image(systemName: "plus")
                 }
             }
+        }
+        .fileImporter(isPresented: $showingImport, allowedContentTypes: [UTType.zip]) { result in
+            if case .success(let url) = result {
+                importBook(from: url)
+            }
+        }
+        .sheet(isPresented: $showShareSheet) {
+            if let url = exportURL {
+                ShareSheet(url: url)
+            }
+        }
+        .alert("Import Failed", isPresented: Binding(
+            get: { importError != nil },
+            set: { if !$0 { importError = nil } }
+        )) {
+            Button("OK") { importError = nil }
+        } message: {
+            Text(importError ?? "")
         }
         .alert("New Book", isPresented: $showingNewBook) {
             TextField("Book name", text: $newBookName)
@@ -73,4 +106,31 @@ struct BookListView: View {
             Button("Cancel", role: .cancel) { renamingBook = nil }
         }
     }
+
+    private func exportBook(_ book: Book) {
+        do {
+            exportURL = try appDb.exportBook(id: book.id)
+            showShareSheet = true
+        } catch {
+            importError = error.localizedDescription
+        }
+    }
+
+    private func importBook(from url: URL) {
+        guard url.startAccessingSecurityScopedResource() else { return }
+        defer { url.stopAccessingSecurityScopedResource() }
+        do {
+            _ = try appDb.importBook(from: url)
+        } catch {
+            importError = error.localizedDescription
+        }
+    }
+}
+
+struct ShareSheet: UIViewControllerRepresentable {
+    let url: URL
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+    }
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
 }
