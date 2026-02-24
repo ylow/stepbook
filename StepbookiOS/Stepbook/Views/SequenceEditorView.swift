@@ -23,7 +23,9 @@ struct SequenceEditorView: View {
 
     // Photo picker
     @State private var selectedPhotos: [PhotosPickerItem] = []
+    @State private var showingPhotoPicker = false
     @State private var showingCamera = false
+    @State private var cameraImage: UIImage?
 
     // Canvas actions (undo/redo bridge)
     @State private var canvasActionHandler = CanvasActionHandler()
@@ -55,9 +57,19 @@ struct SequenceEditorView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .photosPicker(isPresented: $showingPhotoPicker, selection: $selectedPhotos, matching: .images)
+        .fullScreenCover(isPresented: $showingCamera) {
+            CameraCaptureView(image: $cameraImage)
+        }
         .task { await load() }
         .onChange(of: selectedPhotos) { _, items in
             Task { await importPhotos(items) }
+        }
+        .onChange(of: cameraImage) { _, image in
+            if let image {
+                Task { await importCameraPhoto(image) }
+                cameraImage = nil
+            }
         }
     }
 
@@ -250,7 +262,9 @@ struct SequenceEditorView: View {
                 }
 
                 Menu {
-                    PhotosPicker(selection: $selectedPhotos, matching: .images) {
+                    Button {
+                        showingPhotoPicker = true
+                    } label: {
                         Label("Photo Library", systemImage: "photo.on.rectangle")
                     }
                     Button {
@@ -286,7 +300,9 @@ struct SequenceEditorView: View {
 
     private var addPhotosButtons: some View {
         HStack(spacing: 16) {
-            PhotosPicker(selection: $selectedPhotos, matching: .images) {
+            Button {
+                showingPhotoPicker = true
+            } label: {
                 Label("Photo Library", systemImage: "photo.on.rectangle")
                     .padding()
                     .background(.blue)
@@ -354,6 +370,18 @@ struct SequenceEditorView: View {
             _ = try? db.createStep(sequenceId: sequenceId, imagePath: imagePath)
         }
         selectedPhotos = []
+        await load()
+        if !steps.isEmpty {
+            selectedStepIndex = steps.count - 1
+        }
+        editMode = true
+    }
+
+    private func importCameraPhoto(_ image: UIImage) async {
+        guard let db = appDb.activeDatabase, let store = imageStore else { return }
+        let stepId = UUID().uuidString
+        guard let imagePath = try? store.saveImage(image, sequenceId: sequenceId, stepId: stepId) else { return }
+        _ = try? db.createStep(sequenceId: sequenceId, imagePath: imagePath)
         await load()
         if !steps.isEmpty {
             selectedStepIndex = steps.count - 1
