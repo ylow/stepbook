@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		02A1B3C5D7E9F0A2B4C6D8E0 /* CameraCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C8A91B3D4E52F6A09183E47 /* CameraCaptureView.swift */; };
 		06C31C94DDE936422FCF8DD2 /* StepbookApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DBF59C74224E118DFB2D38 /* StepbookApp.swift */; };
 		08D0A43F770D4DDDA0F3F579 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F512170E9CDBD80F35C08C /* Sequence.swift */; };
 		0B1D93E633FE230A90AFF4CC /* DatabaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EA54DA07FB553D48FF4FDC /* DatabaseTests.swift */; };
@@ -22,13 +21,16 @@
 		38BE91269A8C7C6539CA080C /* AnnotationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E9BB98C531005AB5BAA01C /* AnnotationData.swift */; };
 		3E33ED527B29EFBA7A420E6B /* AnnotationConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA75D3EF81FF0A5D42C2E02 /* AnnotationConverter.swift */; };
 		473674FAA7F64CE26AFC2EFF /* ImportExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4CA832D0E130ECC202695D /* ImportExportService.swift */; };
+		492AA53EFAA2A0001DFDDF96 /* CameraCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D0B29CD9C08CF7DB0803AAE /* CameraCaptureView.swift */; };
 		4F1AE14989ED2A0F997C8176 /* FilmstripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE7C2D2E1D065A863283610 /* FilmstripView.swift */; };
 		60F16615CE0FFE4BCE1CA0D7 /* BookListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C51FD3C03E518B6E4D047AB /* BookListView.swift */; };
 		6A81B3924DB613F5B1CDAE1D /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C266EB25CC5F2AA5C79640F0 /* ImageStore.swift */; };
 		73E77480F5DEB4ED390B7776 /* AppDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F23682F08E3E37E30228CD /* AppDatabase.swift */; };
+		76C6A9BA4A705C156152FA05 /* SearchServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263D4EA566342C61D52772A9 /* SearchServiceTests.swift */; };
 		8681C2531DD3DE4D8E36442D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B9798E150C8F348789344AF /* Assets.xcassets */; };
 		8997B54C002B491C26B4FA23 /* StepViewerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24E4F24756997314D47DFF7C /* StepViewerView.swift */; };
 		924FE384EC0CBDA5BE1E6398 /* ImportExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3EB719D070CC2F2A64F20FD /* ImportExportTests.swift */; };
+		ADA0A6981EE6FA8D66D5E23C /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE9F172466120D972A6AE4D /* SearchService.swift */; };
 		B052C800CC8AC16BCFDA0679 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4F060DB3142AA6C8E192890B /* ZIPFoundation */; };
 		C63D259763C08AE9C5AA17AF /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = F4420513E5E1040D3CDDB69F /* GRDB */; };
 		E5BDE209EA26D26EA280405A /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF03C6D8D33C3E937C7683D8 /* Book.swift */; };
@@ -51,21 +53,23 @@
 		0B100A3DB26AE0A9EE92CE1C /* StepbookTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepbookTests.swift; sourceTree = "<group>"; };
 		11DBF59C74224E118DFB2D38 /* StepbookApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepbookApp.swift; sourceTree = "<group>"; };
 		1B9798E150C8F348789344AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1D0B29CD9C08CF7DB0803AAE /* CameraCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureView.swift; sourceTree = "<group>"; };
 		24E4F24756997314D47DFF7C /* StepViewerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepViewerView.swift; sourceTree = "<group>"; };
+		263D4EA566342C61D52772A9 /* SearchServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchServiceTests.swift; sourceTree = "<group>"; };
 		2FA75D3EF81FF0A5D42C2E02 /* AnnotationConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationConverter.swift; sourceTree = "<group>"; };
 		388A85676FEADD7C78FDD80A /* AnnotationToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationToolbar.swift; sourceTree = "<group>"; };
 		39F512170E9CDBD80F35C08C /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
-		3AC1879AB9044431600D9B1D /* Stepbook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stepbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3AC1879AB9044431600D9B1D /* Stepbook.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Stepbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C51FD3C03E518B6E4D047AB /* BookListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookListView.swift; sourceTree = "<group>"; };
 		3F1A52268AA05F94B96642B6 /* SequenceEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceEditorView.swift; sourceTree = "<group>"; };
 		543EAF32D7CD4B1B957CB970 /* StepCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepCanvasView.swift; sourceTree = "<group>"; };
 		5D4CA832D0E130ECC202695D /* ImportExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportService.swift; sourceTree = "<group>"; };
 		60E9BB98C531005AB5BAA01C /* AnnotationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationData.swift; sourceTree = "<group>"; };
 		784FFFB9486F9FF7E443CF9F /* ImageStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStoreTests.swift; sourceTree = "<group>"; };
-		7C8A91B3D4E52F6A09183E47 /* CameraCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureView.swift; sourceTree = "<group>"; };
 		92F23682F08E3E37E30228CD /* AppDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDatabase.swift; sourceTree = "<group>"; };
 		9DE7C2D2E1D065A863283610 /* FilmstripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmstripView.swift; sourceTree = "<group>"; };
 		9E3475280D7E3D80AD7EFB85 /* Step.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Step.swift; sourceTree = "<group>"; };
+		9EE9F172466120D972A6AE4D /* SearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchService.swift; sourceTree = "<group>"; };
 		B3EB719D070CC2F2A64F20FD /* ImportExportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportTests.swift; sourceTree = "<group>"; };
 		B932B74359E21E3D9ADC9CE1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BF03C6D8D33C3E937C7683D8 /* Book.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
@@ -123,7 +127,7 @@
 			children = (
 				388A85676FEADD7C78FDD80A /* AnnotationToolbar.swift */,
 				3C51FD3C03E518B6E4D047AB /* BookListView.swift */,
-				7C8A91B3D4E52F6A09183E47 /* CameraCaptureView.swift */,
+				1D0B29CD9C08CF7DB0803AAE /* CameraCaptureView.swift */,
 				9DE7C2D2E1D065A863283610 /* FilmstripView.swift */,
 				3F1A52268AA05F94B96642B6 /* SequenceEditorView.swift */,
 				D00A418DA7114124AD0E189C /* SequenceListView.swift */,
@@ -168,6 +172,7 @@
 				784FFFB9486F9FF7E443CF9F /* ImageStoreTests.swift */,
 				B3EB719D070CC2F2A64F20FD /* ImportExportTests.swift */,
 				FA330EAFB0D0329A024674CC /* ModelsTests.swift */,
+				263D4EA566342C61D52772A9 /* SearchServiceTests.swift */,
 				0B100A3DB26AE0A9EE92CE1C /* StepbookTests.swift */,
 			);
 			path = StepbookTests;
@@ -179,6 +184,7 @@
 				2FA75D3EF81FF0A5D42C2E02 /* AnnotationConverter.swift */,
 				C266EB25CC5F2AA5C79640F0 /* ImageStore.swift */,
 				5D4CA832D0E130ECC202695D /* ImportExportService.swift */,
+				9EE9F172466120D972A6AE4D /* SearchService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -231,6 +237,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					53B3BC919186C5D1BEB8B3DE = {
+						DevelopmentTeam = "";
+					};
+				};
 			};
 			buildConfigurationList = AF81F79F1B22862D443B6781 /* Build configuration list for PBXProject "Stepbook" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -242,7 +253,7 @@
 			);
 			mainGroup = 791804F5A272147076C88CCF;
 			packageReferences = (
-				D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB" */,
+				D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				A73ACA18A72637BA99A33739 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			projectDirPath = "";
@@ -275,6 +286,7 @@
 				E5E78E92F9DB9B862988A4DF /* ImageStoreTests.swift in Sources */,
 				924FE384EC0CBDA5BE1E6398 /* ImportExportTests.swift in Sources */,
 				33AB50A15DDEB59401809D21 /* ModelsTests.swift in Sources */,
+				76C6A9BA4A705C156152FA05 /* SearchServiceTests.swift in Sources */,
 				373E62F4348A91B7A737481F /* StepbookTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -290,11 +302,12 @@
 				E5BDE209EA26D26EA280405A /* Book.swift in Sources */,
 				2A946AAE95B5C7F270D3012B /* BookDatabase.swift in Sources */,
 				60F16615CE0FFE4BCE1CA0D7 /* BookListView.swift in Sources */,
-				02A1B3C5D7E9F0A2B4C6D8E0 /* CameraCaptureView.swift in Sources */,
+				492AA53EFAA2A0001DFDDF96 /* CameraCaptureView.swift in Sources */,
 				FFCB0EC5AA4738CF5F175554 /* ContentView.swift in Sources */,
 				4F1AE14989ED2A0F997C8176 /* FilmstripView.swift in Sources */,
 				6A81B3924DB613F5B1CDAE1D /* ImageStore.swift in Sources */,
 				473674FAA7F64CE26AFC2EFF /* ImportExportService.swift in Sources */,
+				ADA0A6981EE6FA8D66D5E23C /* SearchService.swift in Sources */,
 				08D0A43F770D4DDDA0F3F579 /* Sequence.swift in Sources */,
 				2D51FB22D3923A6E086AE7CE /* SequenceEditorView.swift in Sources */,
 				F97CAD4AE26E840FE8B9F2A3 /* SequenceListView.swift in Sources */,
@@ -338,7 +351,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = RXZ6EC7AH4;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Stepbook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -355,7 +368,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = RXZ6EC7AH4;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Stepbook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -544,7 +557,7 @@
 				minimumVersion = 0.9.0;
 			};
 		};
-		D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB" */ = {
+		D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift";
 			requirement = {
@@ -562,7 +575,7 @@
 		};
 		F4420513E5E1040D3CDDB69F /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = D1EED7439062A3375FBE9780 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
 		};
 /* End XCSwiftPackageProductDependency section */

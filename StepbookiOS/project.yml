@@ -28,6 +28,15 @@ targets:
       GENERATE_INFOPLIST_FILE: "YES"
     dependencies:
       - target: Stepbook
+schemes:
+  Stepbook:
+    build:
+      targets:
+        Stepbook: all
+        StepbookTests: [test]
+    test:
+      targets:
+        - StepbookTests
 packages:
   GRDB:
     url: https://github.com/groue/GRDB.swift
