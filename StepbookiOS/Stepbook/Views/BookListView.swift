@@ -2,6 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct BookListView: View {
+    @Binding var navigationPath: NavigationPath
     @Environment(AppDatabase.self) private var appDb
     @State private var showingNewBook = false
     @State private var newBookName = ""

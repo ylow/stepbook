@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 
 struct SequenceListView: View {
     let book: Book
+    @Binding var navigationPath: NavigationPath
     @Environment(AppDatabase.self) private var appDb
     @State private var sequences: [Sequence] = []
     @State private var showingNewSequence = false

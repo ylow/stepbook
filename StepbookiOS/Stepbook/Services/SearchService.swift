@@ -24,8 +24,6 @@ final class SearchService {
         var descriptionResults: [SearchResult] = []
         var notesResults: [SearchResult] = []
 
-        let previousBookId = appDb.activeBookId
-
         for book in appDb.books {
             guard let db = openBook(book) else { continue }
 
@@ -64,9 +62,6 @@ final class SearchService {
                 }
             }
         }
-
-        // Restore previous book
-        try? appDb.switchBook(id: previousBookId)
 
         return titleResults + descriptionResults + notesResults
     }
