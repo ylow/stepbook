@@ -12,46 +12,30 @@ struct BookListView: View {
     @State private var importError: String?
     @State private var exportURL: URL?
     @State private var showShareSheet = false
+    @State private var searchText = ""
+    @State private var searchResults: [SearchResult] = []
+    @State private var isSearching = false
 
     var body: some View {
-        List {
-            ForEach(appDb.books) { book in
-                NavigationLink(value: book) {
-                    HStack {
-                        Image(systemName: "book.closed.fill")
-                            .foregroundStyle(.blue)
-                            .font(.title2)
-                        VStack(alignment: .leading) {
-                            Text(book.name)
-                                .font(.headline)
-                            if book.id == "default" {
-                                Text("Default")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .padding(.vertical, 4)
-                }
-                .contextMenu {
-                    Button {
-                        exportBook(book)
-                    } label: {
-                        Label("Export", systemImage: "square.and.arrow.up")
-                    }
-                    Button("Rename") {
-                        renameText = book.name
-                        renamingBook = book
-                    }
-                    if book.id != "default" {
-                        Button("Delete", role: .destructive) {
-                            try? appDb.deleteBook(id: book.id)
-                        }
-                    }
-                }
+        Group {
+            if isSearching && !searchText.isEmpty {
+                searchResultsList
+            } else {
+                bookList
             }
         }
         .navigationTitle("Books")
+        .searchable(text: $searchText, prompt: "Search sequences and steps")
+        .onChange(of: searchText) { _, query in
+            if query.isEmpty {
+                searchResults = []
+                isSearching = false
+            } else {
+                isSearching = true
+                let service = SearchService(appDb: appDb)
+                searchResults = service.search(query: query)
+            }
+        }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
@@ -108,6 +92,69 @@ struct BookListView: View {
         }
     }
 
+    private var bookList: some View {
+        List {
+            ForEach(appDb.books) { book in
+                NavigationLink(value: book) {
+                    HStack {
+                        Image(systemName: "book.closed.fill")
+                            .foregroundStyle(.blue)
+                            .font(.title2)
+                        VStack(alignment: .leading) {
+                            Text(book.name)
+                                .font(.headline)
+                            if book.id == "default" {
+                                Text("Default")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+                .contextMenu {
+                    Button {
+                        exportBook(book)
+                    } label: {
+                        Label("Export", systemImage: "square.and.arrow.up")
+                    }
+                    Button("Rename") {
+                        renameText = book.name
+                        renamingBook = book
+                    }
+                    if book.id != "default" {
+                        Button("Delete", role: .destructive) {
+                            try? appDb.deleteBook(id: book.id)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var searchResultsList: some View {
+        Group {
+            if searchResults.isEmpty {
+                ContentUnavailableView.search(text: searchText)
+            } else {
+                List(searchResults) { result in
+                    Button {
+                        navigateToResult(result)
+                    } label: {
+                        SearchResultRow(result: result)
+                    }
+                }
+            }
+        }
+    }
+
+    private func navigateToResult(_ result: SearchResult) {
+        searchText = ""
+        isSearching = false
+        navigationPath.append(result.book)
+        navigationPath.append(result.sequence)
+    }
+
     private func exportBook(_ book: Book) {
         do {
             exportURL = try appDb.exportBook(id: book.id)
@@ -125,6 +172,39 @@ struct BookListView: View {
         } catch {
             importError = error.localizedDescription
         }
+    }
+}
+
+struct SearchResultRow: View {
+    let result: SearchResult
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(result.sequence.title)
+                .font(.headline)
+            HStack(spacing: 4) {
+                Image(systemName: "book.closed.fill")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Text(result.book.name)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if let step = result.step {
+                    Text("\u{00b7}")
+                        .foregroundStyle(.secondary)
+                    Text("Step \(step.orderIndex + 1)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            if result.matchField == "description" || result.matchField == "notes" {
+                Text(result.matchText)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+        }
+        .padding(.vertical, 2)
     }
 }
 
