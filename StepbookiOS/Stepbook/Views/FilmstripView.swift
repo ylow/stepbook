@@ -7,6 +7,13 @@ struct FilmstripView: View {
     let onSelect: (String) -> Void
     let onDelete: (String) -> Void
 
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    private var isCompact: Bool { verticalSizeClass == .compact }
+    private var stripHeight: CGFloat { isCompact ? 64 : 88 }
+    private var thumbWidth: CGFloat { isCompact ? 60 : 80 }
+    private var thumbHeight: CGFloat { isCompact ? 45 : 60 }
+
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
@@ -16,6 +23,8 @@ struct FilmstripView: View {
                             step: step,
                             isSelected: step.id == selectedId,
                             imageStore: imageStore,
+                            thumbWidth: thumbWidth,
+                            thumbHeight: thumbHeight,
                             onTap: { onSelect(step.id) },
                             onDelete: { onDelete(step.id) }
                         )
@@ -23,9 +32,9 @@ struct FilmstripView: View {
                     }
                 }
                 .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.vertical, isCompact ? 4 : 8)
             }
-            .frame(height: 88)
+            .frame(height: stripHeight)
             .background(.ultraThinMaterial)
             .onChange(of: selectedId) { _, newId in
                 if let newId {
@@ -42,6 +51,8 @@ struct FilmstripThumb: View {
     let step: Step
     let isSelected: Bool
     let imageStore: ImageStore
+    var thumbWidth: CGFloat = 80
+    var thumbHeight: CGFloat = 60
     let onTap: () -> Void
     let onDelete: () -> Void
 
@@ -50,17 +61,17 @@ struct FilmstripThumb: View {
             ZStack(alignment: .bottomTrailing) {
                 if let thumb = imageStore.loadThumbnail(
                     path: step.imagePath,
-                    maxSize: CGSize(width: 120, height: 80)
+                    maxSize: CGSize(width: thumbWidth * 1.5, height: thumbHeight * 1.5)
                 ) {
                     Image(uiImage: thumb)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 80, height: 60)
+                        .frame(width: thumbWidth, height: thumbHeight)
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                 } else {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(.quaternary)
-                        .frame(width: 80, height: 60)
+                        .frame(width: thumbWidth, height: thumbHeight)
                 }
                 Text("\(step.orderIndex + 1)")
                     .font(.system(size: 10, weight: .bold))

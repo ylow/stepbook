@@ -7,13 +7,13 @@ struct SequenceEditorView: View {
     let book: Book
     @Environment(AppDatabase.self) private var appDb
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     @State private var sequence: Sequence?
     @State private var steps: [Step] = []
     @State private var selectedStepIndex: Int = 0
     @State private var editMode = false
     @State private var overlayVisible = true
-    @State private var showNotes = false
     @State private var captionExpanded = false
 
     // Drawing state
@@ -30,6 +30,9 @@ struct SequenceEditorView: View {
     // Canvas actions (undo/redo bridge)
     @State private var canvasActionHandler = CanvasActionHandler()
 
+    // Notes sheet (landscape)
+    @State private var showNotesSheet = false
+
     // Export
     @State private var exportURL: URL?
     @State private var showShareSheet = false
@@ -44,10 +47,14 @@ struct SequenceEditorView: View {
         return selectedTool.toPKTool(color: uiColor, width: strokeWidth.rawValue)
     }
 
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
+    /// Show the system navigation bar for edit/empty states (proper safe area handling),
+    /// hide it for view mode (which uses its own floating overlay).
+    private var showSystemBar: Bool {
+        editMode || steps.isEmpty
+    }
 
+    var body: some View {
+        Group {
             if steps.isEmpty {
                 emptyState
             } else if editMode {
@@ -56,10 +63,80 @@ struct SequenceEditorView: View {
                 viewModeView
             }
         }
-        .toolbar(.hidden, for: .navigationBar)
+        .background(Color.black.ignoresSafeArea())
+        .toolbar(showSystemBar ? .visible : .hidden, for: .navigationBar)
+        .toolbarBackground(Color.black, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            if showSystemBar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if editMode {
+                        Button("Done") {
+                            editMode = false
+                            overlayVisible = true
+                        }
+                        .fontWeight(.semibold)
+                    } else {
+                        Button { dismiss() } label: {
+                            Image(systemName: "chevron.left")
+                            Text("Back")
+                        }
+                    }
+                }
+                ToolbarItem(placement: .principal) {
+                    if let seq = sequence {
+                        Text(seq.title)
+                            .font(.headline)
+                            .lineLimit(1)
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                            Button {
+                                showingPhotoPicker = true
+                            } label: {
+                                Label("Photo Library", systemImage: "photo.on.rectangle")
+                            }
+                            Button {
+                                showingCamera = true
+                            } label: {
+                                Label("Camera", systemImage: "camera")
+                            }
+                            if !steps.isEmpty {
+                                Divider()
+                                if let url = exportURL {
+                                    ShareLink(item: url) {
+                                        Label("Share Export", systemImage: "square.and.arrow.up")
+                                    }
+                                } else {
+                                    Button {
+                                        exportSequence()
+                                    } label: {
+                                        Label("Export", systemImage: "square.and.arrow.up")
+                                    }
+                                }
+                            }
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+        }
         .photosPicker(isPresented: $showingPhotoPicker, selection: $selectedPhotos, matching: .images)
         .fullScreenCover(isPresented: $showingCamera) {
             CameraCaptureView(image: $cameraImage)
+        }
+        .sheet(isPresented: $showNotesSheet) {
+            if let step = currentStep {
+                NotesSheetView(
+                    notes: step.notes,
+                    onSave: { notes in
+                        saveNotes(stepId: step.id, notes: notes)
+                    }
+                )
+            }
         }
         .task { await load() }
         .onChange(of: selectedPhotos) { _, items in
@@ -77,7 +154,6 @@ struct SequenceEditorView: View {
 
     private var emptyState: some View {
         VStack(spacing: 20) {
-            headerBar
             Spacer()
             ContentUnavailableView(
                 "No Steps Yet",
@@ -107,25 +183,24 @@ struct SequenceEditorView: View {
             }
 
             if overlayVisible {
-                VStack {
+                VStack(spacing: 0) {
                     HStack {
                         Button { dismiss() } label: {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 18, weight: .semibold))
                                 .foregroundStyle(.white)
                                 .frame(width: 44, height: 44)
-                                .background(.black.opacity(0.4))
-                                .clipShape(Circle())
                         }
                         Spacer()
                         Text("\(selectedStepIndex + 1) / \(steps.count)")
                             .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(.white)
-                            .shadow(radius: 4)
                         Spacer()
                         Color.clear.frame(width: 44, height: 44)
                     }
-                    .padding()
+                    .padding(.horizontal)
+                    .padding(.vertical, 4)
+                    .background(.black.opacity(0.5))
                     Spacer()
                 }
             }
@@ -168,45 +243,58 @@ struct SequenceEditorView: View {
 
     // MARK: - Edit Mode
 
+    private var isLandscape: Bool {
+        verticalSizeClass == .compact
+    }
+
     private var editModeView: some View {
         VStack(spacing: 0) {
-            headerBar
+            if isLandscape {
+                // Landscape: toolbar on left, canvas in center, notes on right
+                HStack(spacing: 0) {
+                    AnnotationToolbar(
+                        selectedTool: $selectedTool,
+                        selectedColor: $selectedColor,
+                        strokeWidth: $strokeWidth,
+                        onUndo: { canvasActionHandler.undo() },
+                        onRedo: { canvasActionHandler.redo() },
+                        onClearAll: { canvasActionHandler.clearAll() },
+                        axis: .vertical
+                    )
+                    .padding(.top, 14)
 
-            AnnotationToolbar(
-                selectedTool: $selectedTool,
-                selectedColor: $selectedColor,
-                strokeWidth: $strokeWidth,
-                onUndo: { canvasActionHandler.undo() },
-                onRedo: { canvasActionHandler.redo() },
-                onClearAll: { canvasActionHandler.clearAll() }
-            )
+                    canvasView
 
-            if let step = currentStep, let store = imageStore {
-                StepCanvasView(
-                    imagePath: step.imagePath,
-                    imageStore: store,
-                    annotations: AnnotationData.parse(from: step.annotations),
-                    isEditing: true,
-                    tool: currentPKTool,
-                    actionHandler: canvasActionHandler,
-                    onAnnotationsChanged: { annotation in
-                        saveAnnotations(stepId: step.id, annotation: annotation)
+                    if let step = currentStep {
+                        NotesSidebar(
+                            notes: step.notes,
+                            onTap: { showNotesSheet = true }
+                        )
+                        .id(step.id)
+                        .frame(width: 200)
                     }
+                }
+            } else {
+                // Portrait: original vertical stack
+                AnnotationToolbar(
+                    selectedTool: $selectedTool,
+                    selectedColor: $selectedColor,
+                    strokeWidth: $strokeWidth,
+                    onUndo: { canvasActionHandler.undo() },
+                    onRedo: { canvasActionHandler.redo() },
+                    onClearAll: { canvasActionHandler.clearAll() }
                 )
-                .id(step.id) // Recreate canvas when step changes
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.black)
-            }
 
-            if showNotes, let step = currentStep {
-                StepNotesEditor(
-                    notes: step.notes,
-                    onSave: { notes in
-                        saveNotes(stepId: step.id, notes: notes)
-                    }
-                )
-                .id(step.id) // Force recreation when step changes
-                .frame(height: 120)
+                canvasView
+
+                if let step = currentStep {
+                    NotesSidebar(
+                        notes: step.notes,
+                        onTap: { showNotesSheet = true }
+                    )
+                    .id(step.id)
+                    .frame(height: 80)
+                }
             }
 
             if let store = imageStore {
@@ -225,76 +313,27 @@ struct SequenceEditorView: View {
         }
     }
 
-    // MARK: - Header Bar
-
-    private var headerBar: some View {
-        HStack {
-            if editMode {
-                Button("Done") {
-                    editMode = false
-                    overlayVisible = true
+    @ViewBuilder
+    private var canvasView: some View {
+        if let step = currentStep, let store = imageStore {
+            StepCanvasView(
+                imagePath: step.imagePath,
+                imageStore: store,
+                annotations: AnnotationData.parse(from: step.annotations),
+                isEditing: true,
+                tool: currentPKTool,
+                actionHandler: canvasActionHandler,
+                onAnnotationsChanged: { annotation in
+                    saveAnnotations(stepId: step.id, annotation: annotation)
                 }
-                .fontWeight(.semibold)
-            } else {
-                Button { dismiss() } label: {
-                    Image(systemName: "chevron.left")
-                    Text("Back")
-                }
-            }
-
-            Spacer()
-
-            if let seq = sequence {
-                Text(seq.title)
-                    .font(.headline)
-                    .lineLimit(1)
-            }
-
-            Spacer()
-
-            HStack(spacing: 16) {
-                if editMode {
-                    Button {
-                        showNotes.toggle()
-                    } label: {
-                        Image(systemName: showNotes ? "note.text.badge.plus" : "note.text")
-                    }
-                }
-
-                Menu {
-                    Button {
-                        showingPhotoPicker = true
-                    } label: {
-                        Label("Photo Library", systemImage: "photo.on.rectangle")
-                    }
-                    Button {
-                        showingCamera = true
-                    } label: {
-                        Label("Camera", systemImage: "camera")
-                    }
-                    if !steps.isEmpty {
-                        Divider()
-                        if let url = exportURL {
-                            ShareLink(item: url) {
-                                Label("Share Export", systemImage: "square.and.arrow.up")
-                            }
-                        } else {
-                            Button {
-                                exportSequence()
-                            } label: {
-                                Label("Export", systemImage: "square.and.arrow.up")
-                            }
-                        }
-                    }
-                } label: {
-                    Image(systemName: "plus")
-                }
-            }
+            )
+            .id(step.id)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(.black)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
-        .background(.ultraThinMaterial)
     }
+
+    // headerBar removed — now using system toolbar items (see body)
 
     // MARK: - Add Photos Buttons
 
@@ -406,30 +445,52 @@ struct SequenceEditorView: View {
     }
 }
 
-struct StepNotesEditor: View {
+/// Read-only notes preview. Tap to edit in a sheet.
+struct NotesSidebar: View {
+    let notes: String
+    let onTap: () -> Void
+
+    var body: some View {
+        ScrollView {
+            Text(notes.isEmpty ? "Tap to add notes..." : notes)
+                .font(.subheadline)
+                .foregroundStyle(notes.isEmpty ? Color.secondary : Color.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
+        }
+        .background(Color(white: 0.15))
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onTap)
+    }
+}
+
+/// Sheet for editing notes in landscape mode (has its own keyboard handling).
+struct NotesSheetView: View {
     @State private var text: String
     let onSave: (String) -> Void
+    @Environment(\.dismiss) private var dismiss
 
     init(notes: String, onSave: @escaping (String) -> Void) {
         _text = State(initialValue: notes)
         self.onSave = onSave
     }
 
-    @FocusState private var isFocused: Bool
-
     var body: some View {
-        TextEditor(text: $text)
-            .focused($isFocused)
-            .padding(8)
-            .background(.ultraThinMaterial)
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Done") { isFocused = false }
+        NavigationStack {
+            TextEditor(text: $text)
+                .padding(8)
+                .navigationTitle("Notes")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") {
+                            onSave(text)
+                            dismiss()
+                        }
+                        .fontWeight(.semibold)
+                    }
                 }
-            }
-            .onChange(of: text) { _, newValue in
-                onSave(newValue)
-            }
+        }
+        .presentationDetents([.medium])
     }
 }
