@@ -11,7 +11,7 @@
         <input
           ref="importInput"
           type="file"
-          accept=".zip"
+          accept=".stepseq,.zip"
           style="display: none"
           @change="handleImport"
         />

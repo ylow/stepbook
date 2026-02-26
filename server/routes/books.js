@@ -81,10 +81,10 @@ const importBookUpload = multer({
   storage: importBookStorage,
   limits: { fileSize: 500 * 1024 * 1024 }, // 500MB
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip')) {
+    if (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip') || file.originalname.endsWith('.stepbook')) {
       cb(null, true);
     } else {
-      cb(new Error('Only zip files are allowed'));
+      cb(new Error('Only .stepbook and .zip files are allowed'));
     }
   }
 });
@@ -117,8 +117,8 @@ router.get('/:id/export', (req, res) => {
 
   const safeName = book.name.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 50) || 'book';
 
-  res.set('Content-Type', 'application/zip');
-  res.set('Content-Disposition', `attachment; filename="${safeName}.zip"`);
+  res.set('Content-Type', 'application/octet-stream');
+  res.set('Content-Disposition', `attachment; filename="${safeName}.stepbook"`);
 
   const archive = archiver('zip', { zlib: { level: 5 } });
 

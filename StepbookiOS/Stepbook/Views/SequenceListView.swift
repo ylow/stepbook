@@ -68,7 +68,7 @@ struct SequenceListView: View {
             }
             Button("Cancel", role: .cancel) {}
         }
-        .fileImporter(isPresented: $showingImport, allowedContentTypes: [UTType.zip]) { result in
+        .fileImporter(isPresented: $showingImport, allowedContentTypes: [.stepseq, .zip]) { result in
             if case .success(let url) = result {
                 importSequence(from: url)
             }

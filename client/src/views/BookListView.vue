@@ -8,7 +8,7 @@
         <button @click="showCreate = true">+ New Book</button>
         <input
           type="file"
-          accept=".zip"
+          accept=".stepbook,.zip"
           ref="importInput"
           style="display: none"
           @change="handleImportBook"

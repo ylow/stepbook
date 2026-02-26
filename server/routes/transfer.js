@@ -23,10 +23,10 @@ const importUpload = multer({
   storage: importStorage,
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip')) {
+    if (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip') || file.originalname.endsWith('.stepseq')) {
       cb(null, true);
     } else {
-      cb(new Error('Only zip files are allowed'));
+      cb(new Error('Only .stepseq and .zip files are allowed'));
     }
   }
 });
@@ -64,8 +64,8 @@ router.get('/:id/export', (req, res) => {
   // Sanitize title for use as filename
   const safeTitle = sequence.title.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 50) || 'sequence';
 
-  res.set('Content-Type', 'application/zip');
-  res.set('Content-Disposition', `attachment; filename="${safeTitle}.zip"`);
+  res.set('Content-Type', 'application/octet-stream');
+  res.set('Content-Disposition', `attachment; filename="${safeTitle}.stepseq"`);
 
   const archive = archiver('zip', { zlib: { level: 5 } });
 

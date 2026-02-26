@@ -149,7 +149,7 @@ final class AppDatabase {
             .replacingOccurrences(of: "[^a-zA-Z0-9_-]", with: "_", options: .regularExpression)
             .prefix(50)
         let zipURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(safeName).zip")
+            .appendingPathComponent("\(safeName).stepbook")
         try? FileManager.default.removeItem(at: zipURL)
 
         let archive = try Archive(url: zipURL, accessMode: .create)

@@ -76,7 +76,7 @@ final class ImportExportService {
             .replacingOccurrences(of: "[^a-zA-Z0-9_-]", with: "_", options: .regularExpression)
             .prefix(50)
         let zipURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(safeTitle).zip")
+            .appendingPathComponent("\(safeTitle).stepseq")
         try? FileManager.default.removeItem(at: zipURL)
 
         let archive = try Archive(url: zipURL, accessMode: .create)

@@ -1,6 +1,11 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+extension UTType {
+    static let stepbook = UTType(exportedAs: "com.stepbook.book")
+    static let stepseq = UTType(exportedAs: "com.stepbook.sequence")
+}
+
 struct BookListView: View {
     @Binding var navigationPath: NavigationPath
     @Environment(AppDatabase.self) private var appDb
@@ -50,7 +55,7 @@ struct BookListView: View {
                 }
             }
         }
-        .fileImporter(isPresented: $showingImport, allowedContentTypes: [UTType.zip]) { result in
+        .fileImporter(isPresented: $showingImport, allowedContentTypes: [.stepbook, .zip]) { result in
             if case .success(let url) = result {
                 importBook(from: url)
             }
