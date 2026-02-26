@@ -10,8 +10,7 @@ struct BookListView: View {
     @State private var renameText = ""
     @State private var showingImport = false
     @State private var importError: String?
-    @State private var exportURL: URL?
-    @State private var showShareSheet = false
+    @State private var shareItem: ShareItem?
     @State private var searchText = ""
     @State private var searchResults: [SearchResult] = []
     @State private var isSearching = false
@@ -56,10 +55,8 @@ struct BookListView: View {
                 importBook(from: url)
             }
         }
-        .sheet(isPresented: $showShareSheet) {
-            if let url = exportURL {
-                ShareSheet(url: url)
-            }
+        .sheet(item: $shareItem) { item in
+            ShareSheet(url: item.url)
         }
         .alert("Import Failed", isPresented: Binding(
             get: { importError != nil },
@@ -157,8 +154,8 @@ struct BookListView: View {
 
     private func exportBook(_ book: Book) {
         do {
-            exportURL = try appDb.exportBook(id: book.id)
-            showShareSheet = true
+            let url = try appDb.exportBook(id: book.id)
+            shareItem = ShareItem(url: url)
         } catch {
             importError = error.localizedDescription
         }
@@ -206,6 +203,11 @@ struct SearchResultRow: View {
         }
         .padding(.vertical, 2)
     }
+}
+
+struct ShareItem: Identifiable {
+    let id = UUID()
+    let url: URL
 }
 
 struct ShareSheet: UIViewControllerRepresentable {

@@ -1,4 +1,5 @@
 import Foundation
+import GRDB
 import ZIPFoundation
 
 /// Manages the top-level book registry (books.json) and provides
@@ -114,10 +115,20 @@ final class AppDatabase {
             throw StepbookError(message: "Book database not found")
         }
 
-        // Checkpoint WAL to ensure all data is in the main db file
-        let db = try BookDatabase(directory: bookDir)
-        try db.dbPool.write { db in
-            try db.execute(sql: "PRAGMA wal_checkpoint(TRUNCATE)")
+        // Create a clean standalone copy of the database using VACUUM INTO.
+        // This avoids WAL checkpoint locking issues — VACUUM INTO reads the
+        // database and writes a self-contained copy without needing exclusive access.
+        let backupDbURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("export-\(UUID().uuidString).db")
+
+        let dbPool: DatabasePool
+        if id == activeBookId, let activeDb = activeDatabase {
+            dbPool = activeDb.dbPool
+        } else {
+            dbPool = try BookDatabase(directory: bookDir).dbPool
+        }
+        try dbPool.writeWithoutTransaction { db in
+            try db.execute(sql: "VACUUM INTO ?", arguments: [backupDbURL.path])
         }
 
         // Build manifest
@@ -153,8 +164,8 @@ final class AppDatabase {
             return manifestData[start..<start+size]
         }
 
-        // Add stepbook.db
-        try archive.addEntry(with: "stepbook.db", fileURL: dbURL)
+        // Add stepbook.db (the clean backup copy)
+        try archive.addEntry(with: "stepbook.db", fileURL: backupDbURL)
 
         // Add all images
         let fm = FileManager.default
@@ -170,6 +181,9 @@ final class AppDatabase {
                 try archive.addEntry(with: "images/\(relativePath)", fileURL: fileURL)
             }
         }
+
+        // Clean up the temporary database backup
+        try? FileManager.default.removeItem(at: backupDbURL)
 
         return zipURL
     }

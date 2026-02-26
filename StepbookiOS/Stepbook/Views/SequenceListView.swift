@@ -9,8 +9,7 @@ struct SequenceListView: View {
     @State private var showingNewSequence = false
     @State private var newTitle = ""
     @State private var showingImport = false
-    @State private var exportURL: URL?
-    @State private var showShareSheet = false
+    @State private var shareItem: ShareItem?
 
     var body: some View {
         Group {
@@ -74,10 +73,8 @@ struct SequenceListView: View {
                 importSequence(from: url)
             }
         }
-        .sheet(isPresented: $showShareSheet) {
-            if let url = exportURL {
-                ShareSheet(url: url)
-            }
+        .sheet(item: $shareItem) { item in
+            ShareSheet(url: item.url)
         }
         .task { await loadSequences() }
     }
@@ -110,8 +107,8 @@ struct SequenceListView: View {
         guard let db = appDb.activeDatabase, let store = imageStore else { return }
         let service = ImportExportService(database: db, imageStore: store)
         do {
-            exportURL = try service.exportSequence(id: seq.id)
-            showShareSheet = true
+            let url = try service.exportSequence(id: seq.id)
+            shareItem = ShareItem(url: url)
         } catch {
             print("Export failed: \(error)")
         }
