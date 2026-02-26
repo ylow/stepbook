@@ -29,7 +29,6 @@
 			<string>Stepbook Book</string>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.zip-archive</string>
 				<string>public.data</string>
 			</array>
 			<key>UTTypeTagSpecification</key>
@@ -47,7 +46,6 @@
 			<string>Stepbook Sequence</string>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.zip-archive</string>
 				<string>public.data</string>
 			</array>
 			<key>UTTypeTagSpecification</key>
@@ -64,6 +62,8 @@
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>Stepbook Book</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
@@ -74,6 +74,8 @@
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>Stepbook Sequence</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
@@ -83,7 +85,7 @@
 		</dict>
 	</array>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<false/>
+	<true/>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>
